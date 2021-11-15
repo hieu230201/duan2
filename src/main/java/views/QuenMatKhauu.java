@@ -1,7 +1,8 @@
 package views;
 
 import dao.serviceNhanVien;
-
+import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.DotenvEntry;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -29,6 +30,7 @@ public class QuenMatKhauu extends JFrame{
     dao.serviceNhanVien serviceNhanVien = new serviceNhanVien();
 
     public QuenMatKhauu() {
+        Dotenv dotenv = Dotenv.configure().load();
         this.setTitle("Quên Mật Khẩu");
         this.setContentPane(mainPanle);
         this.setVisible(true);
@@ -46,8 +48,8 @@ public class QuenMatKhauu extends JFrame{
                 if (lblTime.getText().equals("0") || lblTime.getText().length() == 0) {
                     Random random = new Random();
                     code = random.nextInt(9999);
-                    String user = "hieuop130316@gmail.com";
-                    String pass = "Hieu130316."; // nhập pass
+                    String user = dotenv.get("MY_ENV_VAR1");
+                    String pass = dotenv.get("MY_EVV_VAR2"); 
                     String to = txtEmail.getText();
                     String subject = "Mã để đổi mật khẩu";
                     String message = "Đây là mã của bạn " + code;
@@ -175,4 +177,5 @@ public class QuenMatKhauu extends JFrame{
         };
         thread.start();
     }
+
 }
