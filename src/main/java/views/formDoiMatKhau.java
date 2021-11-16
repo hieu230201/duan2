@@ -1,13 +1,22 @@
 package views;
 
 import javax.swing.*;
+
+import dao.Log;
 import dao.serviceNhanVien;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 public class formDoiMatKhau extends JFrame{
     private String user;
+    private int role;
     private JPasswordField txtPassOld;
     private JPasswordField txtPassNew;
     private JPasswordField txtConfirm;
@@ -18,7 +27,8 @@ public class formDoiMatKhau extends JFrame{
     serviceNhanVien serviceNhanVienn = new serviceNhanVien();
 
 
-    public formDoiMatKhau() {
+    public formDoiMatKhau() throws IOException {
+        Log log = new Log("hieupro.txt");
         this.setTitle("Đổi Mật Khẩu");
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(2);
@@ -29,11 +39,43 @@ public class formDoiMatKhau extends JFrame{
 
         run();  // chữ chạy
 
+        // khi mở form sẽ mã nhân viên và vai trò của nhân viên đó
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                luuText();
+            }
+        });
+
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                formChinh formChinh = null;
+                try {
+                    formChinh = new formChinh();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                formChinh.setUser(user);
+                formChinh.setRole(role);
+                dispose();
+            }
+        });
+
         // nút thoát chương trình
         btnThoat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                formChinh formChinh = null;
+                try {
+                    formChinh = new formChinh();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                formChinh.setUser(user);
+                formChinh.setRole(role);
+                dispose();
             }
         });
 
@@ -45,7 +87,15 @@ public class formDoiMatKhau extends JFrame{
                     try {
                         JOptionPane.showMessageDialog(null, serviceNhanVienn.doiMatKhau(user, String.valueOf(txtPassNew.getPassword()), String.valueOf(txtPassOld.getPassword())));
                     } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "gặp lỗi rồi! Quay lại để gửi lỗi cho admin nha");
+                        log.logger.setLevel(Level.WARNING);
+                        log.logger.info(ex.getMessage());
+                        log.logger.warning("Lỗi ở form đổi mật khẩu");
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        ex.printStackTrace(pw);
+                        String sStackTrace = sw.toString(); // stack trace as a string
+                        log.logger.severe(sStackTrace);
                     }
                 }
             }
@@ -73,6 +123,10 @@ public class formDoiMatKhau extends JFrame{
             txtConfirm.setText("");
             return false;
         }
+        if (!String.valueOf(txtPassNew.getPassword()).matches("[0-9a-zA-Z]{1,}")) {
+            JOptionPane.showMessageDialog(null, "mật khẩu mới vui lòng là chữ la tinh hoặc số", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
         return  true;
     }
 
@@ -96,11 +150,20 @@ public class formDoiMatKhau extends JFrame{
         thread.start();
     }
 
+    // Phương thức set giá trị cho 3 biến phân quyền
     public void setUser(String user) {
         this.user = user;
     }
+    public void setRole(int role) {
+        this.role = role;
+    }
 
-    public static void main(String[] args) {
+    // đọc dữ liệu phân quyền lên form
+    private void luuText() {
+        System.out.println(user + " bên form đổi mk" );
+    }
+
+    public static void main(String[] args) throws IOException {
         new formDoiMatKhau();
     }
 }

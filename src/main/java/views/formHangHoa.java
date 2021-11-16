@@ -1,7 +1,10 @@
 package views;
 
+import dao.Log;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.io.IOException;
 
 public class formHangHoa extends JFrame{
     private JPanel mainPanel;
@@ -19,7 +22,8 @@ public class formHangHoa extends JFrame{
     private JButton thêmHàngButton;
     DefaultTableModel _dtm;
 
-    public formHangHoa(){
+    public formHangHoa() throws IOException {
+        Log log = new Log("hieupro.txt");
         this.setTitle("Cửa sổ hàng hóa");
         this.setContentPane(mainPanel);
         this.setVisible(true);
@@ -36,7 +40,7 @@ public class formHangHoa extends JFrame{
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new formHangHoa();
     }
 }

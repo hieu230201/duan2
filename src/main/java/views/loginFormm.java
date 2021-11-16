@@ -1,6 +1,7 @@
 package views;
 
 
+import dao.Log;
 import dao.LoginService;
 import model.NhanVien;
 
@@ -9,9 +10,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 public class loginFormm extends JFrame{
+
     private JPanel mainPanel;
     private JTextField txtTaiKhoan;
     private JPasswordField txtPass;
@@ -22,6 +28,8 @@ public class loginFormm extends JFrame{
     NhanVien nv;
     int dem = 0;
     LoginService loginService = new LoginService();
+
+
     public loginFormm() throws SQLException {
         this.setTitle("Đăng Nhập");
         this.setContentPane(mainPanel);
@@ -70,7 +78,8 @@ public class loginFormm extends JFrame{
                             }
                         }
 
-                       if(ckcRemember.isSelected()){
+            // nếu cái nhớ mk đc hhọn
+                        if(ckcRemember.isSelected()){
                            loginService.remember(txtTaiKhoan.getText(), String.valueOf(txtPass.getText()));
                        }else{
                            loginService.remember(null, null);
@@ -78,8 +87,16 @@ public class loginFormm extends JFrame{
 
 
                        JOptionPane.showMessageDialog(null, "Chào mừng " + nv.getManv() + " đã đến với chương trình");
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        formChinh formChinh = new formChinh();
+                        formChinh.setUser(txtTaiKhoan.getText());
+                        formChinh.setRole(nv.getRole());
+                        dispose();
+                    } catch (SQLException | IOException ex) {
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                 }
             }
@@ -89,7 +106,11 @@ public class loginFormm extends JFrame{
         lblQuenPass.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                QuenMatKhauu quenMatKhauu = new QuenMatKhauu();
+                try {
+                    QuenMatKhauu quenMatKhauu = new QuenMatKhauu();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 dispose();
             }
         });
@@ -108,6 +129,21 @@ public class loginFormm extends JFrame{
             return false;
         }
         return true;
+    }
+
+
+    // phương thức báo lỗi
+    private void baoLoi(Exception ex) throws IOException {
+        Log log = new Log("hieupro.txt");
+        JOptionPane.showMessageDialog(null, "gặp lỗi rồi! Quay lại để gửi lỗi cho admin nha");
+        log.logger.setLevel(Level.WARNING);
+        log.logger.info(ex.getMessage());
+        log.logger.warning("Lỗi ở form đăng nhập");
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+        log.logger.severe(sStackTrace);
     }
 
 

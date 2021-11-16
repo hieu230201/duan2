@@ -1,7 +1,10 @@
 package views;
 
+import dao.Log;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.io.IOException;
 
 public class formNhapHang extends JFrame{
     private JPanel mainPanel;
@@ -18,7 +21,8 @@ public class formNhapHang extends JFrame{
     DefaultTableModel _dtm;
     DefaultTableModel _dtmHoaDon;
 
-    public formNhapHang(){
+    public formNhapHang() throws IOException {
+        Log log = new Log("hieupro.txt");
         this.setTitle("Cửa sổ nhập hàng");
         this.setContentPane(mainPanel);
         this.setVisible(true);
@@ -35,7 +39,7 @@ public class formNhapHang extends JFrame{
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new formNhapHang();
     }
 }

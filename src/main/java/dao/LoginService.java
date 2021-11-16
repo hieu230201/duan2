@@ -12,6 +12,9 @@ public class LoginService {
     Connectt con = new Connectt();
     String acconut[] = new String[2];
 
+
+
+    // phương thức đăng nhập
     public NhanVien login (String username, String password) throws SQLException {
         NhanVien nv = new NhanVien();
         String sql = "select * from nhanvien where manv = ? and matkhau = ? and isActive = 1";
@@ -29,6 +32,8 @@ public class LoginService {
         return null;
     }
 
+
+    // phương thức này dùng để nhớ mk
     public void remember(String username, String password) throws SQLException {
         String sql = "update remeber set manv = ?, matkhau = ? WHERE id = 1";
         PreparedStatement pm = con.con().prepareStatement(sql);
@@ -37,6 +42,7 @@ public class LoginService {
         pm.executeUpdate();
     }
 
+    // xài mảng lưu acc
     public String[] acconutDaLuu() throws SQLException{
         String sql1 = "select * from remeber where id = 1";
         PreparedStatement pmm = con.con().prepareStatement(sql1);

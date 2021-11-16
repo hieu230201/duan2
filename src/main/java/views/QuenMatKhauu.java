@@ -1,5 +1,6 @@
 package views;
 
+import dao.Log;
 import dao.serviceNhanVien;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvEntry;
@@ -9,10 +10,16 @@ import javax.mail.internet.MimeMessage;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class QuenMatKhauu extends JFrame{
     private JTextField txtEmail;
@@ -29,7 +36,8 @@ public class QuenMatKhauu extends JFrame{
     int code;
     dao.serviceNhanVien serviceNhanVien = new serviceNhanVien();
 
-    public QuenMatKhauu() {
+    public QuenMatKhauu() throws IOException {
+        Log log = new Log("hieupro.txt");
         Dotenv dotenv = Dotenv.configure().load();
         this.setTitle("Quên Mật Khẩu");
         this.setContentPane(mainPanle);
@@ -40,6 +48,23 @@ public class QuenMatKhauu extends JFrame{
         if (lblTime.getText().equals("0")) {
             btnLayCode.setEnabled(true);
         }
+
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    loginFormm loginForm = new loginFormm();
+                    dispose();
+                } catch (SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
 
         // lây code để gửi email
         btnLayCode.addActionListener(new ActionListener() {
@@ -83,8 +108,12 @@ public class QuenMatKhauu extends JFrame{
                         lblTitle.setText("Chờ mã trong :");
                         JOptionPane.showMessageDialog(null, "Gửi mã thành công");
                         run();
-                    } catch (Exception a) {
-                        throw new RuntimeException(a);
+                    } catch (Exception ex) {
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Đợi chút rồi gửi lại email nha!");
@@ -100,7 +129,11 @@ public class QuenMatKhauu extends JFrame{
                     loginFormm loginFormm = new loginFormm();
                     dispose();
                 } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
                 }
 
             }
@@ -114,7 +147,11 @@ public class QuenMatKhauu extends JFrame{
                     try {
                         JOptionPane.showMessageDialog(null, serviceNhanVien.updatePassNVQuen(txtTaiKhoan.getText(), String.valueOf(txtPassNew.getPassword()), txtEmail.getText()));
                     } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                 }
             }
@@ -155,7 +192,18 @@ public class QuenMatKhauu extends JFrame{
         return true;
     }
 
-
+    private void baoLoi(Exception ex) throws IOException {
+        Log log = new Log("hieupro.txt");
+        JOptionPane.showMessageDialog(null, "gặp lỗi rồi! Quay lại để gửi lỗi cho admin nha");
+        log.logger.setLevel(Level.WARNING);
+        log.logger.info(ex.getMessage());
+        log.logger.warning("Lỗi ở form quên mật khẩu");
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+        log.logger.severe(sStackTrace);
+    }
 
 
     // phương thức đếm thời gian để ngăn người dùng gửi nhiều code quá

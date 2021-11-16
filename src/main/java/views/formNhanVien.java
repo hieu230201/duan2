@@ -1,6 +1,7 @@
 package views;
 
 
+import dao.Log;
 import dao.RendererHighlighted;
 import dao.serviceNhanVien;
 import model.NhanVien;
@@ -11,13 +12,16 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 public class formNhanVien extends JFrame{
+    private String user;
+    private int role;
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
     private JTable tblNhanVien;
@@ -39,7 +43,8 @@ public class formNhanVien extends JFrame{
     serviceNhanVien _list = new serviceNhanVien();
     boolean check = false;
 
-    public  formNhanVien() throws SQLException {
+    public  formNhanVien() throws SQLException, IOException {
+
         this.setTitle("Quản lí nhân viên");
         this.setContentPane(mainPanel);
         this.setSize(700,500);
@@ -62,6 +67,35 @@ public class formNhanVien extends JFrame{
         tblNhanVien.setRowSorter(rowSorter);
         tblNhanVien.setDefaultRenderer(Object.class, renderer);
 
+
+        // mở chương trình và lưu giá trị
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                luuText();
+            }
+        });
+
+        //tắt chương trình quay lại form chính
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                formChinh formChinh = null;
+                try {
+                    formChinh = new formChinh();
+                } catch (IOException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+                formChinh.setUser(user);
+                formChinh.setRole(role);
+                dispose();
+            }
+        });
+
         // nút thêm nhân viên
         btnThem.addActionListener(new ActionListener() {
             @Override
@@ -78,7 +112,11 @@ public class formNhanVien extends JFrame{
                         loadtblXoa();
                         xoaForm();
                     } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                     return;
                 }
@@ -89,7 +127,11 @@ public class formNhanVien extends JFrame{
                                 nv().getManv(), nv().getHoten(), nv().getDaichi(), nv().getSdt(), nv().getEmail(), nv().getMatkhau() ,nv().getRole() == 1 ? "Trưởng Phòng" : "Nhân Viên"});
                         xoaForm();
                     } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                 }
             }
@@ -104,7 +146,11 @@ public class formNhanVien extends JFrame{
                     NhanVien nv = _list.getlist().get(i);
                     txtMk.setText(nv.getMatkhau());
                 } catch (SQLException throwables) {
-                    throwables.printStackTrace();
+                    try {
+                        baoLoi(throwables);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
                 }
                 txtMaNV.setText(String.valueOf(tblNhanVien.getValueAt(i, 0)));
                 txtHoTen.setText(String.valueOf(tblNhanVien.getValueAt(i, 1)));
@@ -140,7 +186,11 @@ public class formNhanVien extends JFrame{
                         xoaForm();
                         loadtbl();
                     } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                 }
             }
@@ -157,11 +207,17 @@ public class formNhanVien extends JFrame{
                     xoaForm();
                     loadtbl();
                 } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
                 }
 
             }
         });
+
+        // nút hiện tbl xóa
         btnTBLXoa.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -169,7 +225,11 @@ public class formNhanVien extends JFrame{
                     try {
                         loadtblXoa();
                     } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                     check = true;
                     JOptionPane.showMessageDialog(null, "Đã hiện thị những nhân viên bị xóa");
@@ -189,7 +249,11 @@ public class formNhanVien extends JFrame{
                     try {
                         loadtbl();
                     } catch (SQLException ex) {
-                        ex.printStackTrace();
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                     JOptionPane.showMessageDialog(null, "Đã hiện thị những nhân viên đang làm");
                     btnTBLXoa.setText("Hiện Thị Những Nhân Viên Đã Xóa");
@@ -206,6 +270,8 @@ public class formNhanVien extends JFrame{
         });
 
 
+
+        // nút tìm kiếm
         txtTimKiem.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -280,14 +346,109 @@ public class formNhanVien extends JFrame{
     }
 
 
+
+
+
     // Phương thức check lỗi trên form
     private boolean loi(){
-
+//        if(txtMaNV.getText().isEmpty() || txtMaNV.getText().isBlank()){
+//            JOptionPane.showMessageDialog(null, "Mã nhân viên không được để trống", "lỗi", 2);
+//            return false;
+//        }
+//
+//
+//        if (!txtMaNV.getText().matches("[0-9a-zA-Z]{1,}")) {
+//            JOptionPane.showMessageDialog(null, "Mã nhân viên vui lòng là chữ la tinh hoặc số", "Lỗi", JOptionPane.WARNING_MESSAGE);
+//            return false;
+//        }
+//        if (txtHoTen.getText().isEmpty() || txtHoTen.getText().isBlank()) {
+//            JOptionPane.showMessageDialog(null, "Tên không được để trống", "Cảnh Báo", 2);
+//            txtHoTen.requestFocus();
+//            return false;
+//        }
+//
+//        if (!txtHoTen.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
+//            JOptionPane.showMessageDialog(null, "Tên vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
+//            return false;
+//        }
+//
+//        if (txtDiaChi.getText().isEmpty() || txtDiaChi.getText().isBlank()) {
+//            JOptionPane.showMessageDialog(null, "Địa chỉ không được để trống", "Cảnh Báo", 2);
+//            txtDiaChi.requestFocus();
+//            return false;
+//        }
+//
+//        if (!txtDiaChi.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
+//            JOptionPane.showMessageDialog(null, "Địa chỉ vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
+//            return false;
+//        }
+//
+//
+//        if (txtSDT.getText().isEmpty() || txtSDT.getText().isBlank()) {
+//            JOptionPane.showMessageDialog(null, "Sđt không được để trống", "Cảnh Báo", 2);
+//            txtSDT.requestFocus();
+//            return false;
+//        }
+//
+//        if (!txtSDT.getText().matches("0[0-9]{10}")) {
+//            JOptionPane.showMessageDialog(null, "Bạn đã nhập sai sđt", "Lỗi", JOptionPane.WARNING_MESSAGE);
+//            return false;
+//        }
+//
+//        if (txtEmail.getText().isEmpty() || txtEmail.getText().isBlank()) {
+//            JOptionPane.showMessageDialog(null, "Email không được để trống", "Cảnh Báo", 2);
+//            txtEmail.requestFocus();
+//            return false;
+//        }
+//        if (!txtEmail.getText().matches("^[a-zA-Z][\\w-]+@([\\w]+\\.[\\w]+|[\\w]+\\.[\\w]{2,}\\.[\\w]{2,})$")) {
+//            JOptionPane.showMessageDialog(null, "Email sai định dạng", "Cảnh Báo", 2);
+//            txtEmail.requestFocus();
+//            return false;
+//        }
+//
+//        if(String.valueOf(txtMk.getPassword()).isEmpty() || String.valueOf(txtMk.getPassword()).isBlank()){
+//            JOptionPane.showMessageDialog(null, "mật khẩu nhân viên không được để trống", "lỗi", 2);
+//            return false;
+//        }
+//
+//
+//        if (!String.valueOf(txtMk.getPassword()).matches("[0-9a-zA-Z]{1,}")) {
+//            JOptionPane.showMessageDialog(null, "mật khẩu nhân viên vui lòng là chữ la tinh hoặc số", "Lỗi", JOptionPane.WARNING_MESSAGE);
+//            return false;
+//        }
         return  true;
     }
 
+    // Phương thức set giá trị cho 2 biến phân quyền
+    public void setUser(String user) {
+        this.user = user;
+    }
+    public void setRole(int role) {
+        this.role = role;
+    }
+    private void baoLoi(Exception ex) throws IOException {
+        Log log = new Log("hieupro.txt");
+        log.logger.setLevel(Level.WARNING);
+        JOptionPane.showMessageDialog(null, "gặp lỗi rồi! Quay lại để gửi lỗi cho admin nha");
+        log.logger.info(ex.getMessage());
+        log.logger.warning("lỗi bên form nhân viên");
 
-    public static void main(String[] args) throws SQLException {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+        log.logger.severe(sStackTrace);
+    }
+
+    // đọc dữ liệu phân quyền lên form
+    private void luuText() {
+
+        System.out.println(user + " bên form nhân viên");
+    }
+
+
+
+    public static void main(String[] args) throws SQLException, IOException {
         new formNhanVien();
     }
 }

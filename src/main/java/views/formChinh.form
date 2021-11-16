@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="mainForm" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="632" height="400"/>
+      <xy x="20" y="20" width="769" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -198,35 +198,42 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="ff9bd" class="javax.swing.JButton" binding="đăngXuấtButton" default-binding="true">
+              <component id="ff9bd" class="javax.swing.JButton" binding="btnDangXuat">
                 <constraints/>
                 <properties>
                   <icon value="img/Exit.png"/>
                   <text value="Đăng xuất"/>
                 </properties>
               </component>
-              <component id="d6142" class="javax.swing.JButton" default-binding="true">
+              <component id="d6142" class="javax.swing.JButton" binding="btnNhapHang">
                 <constraints/>
                 <properties>
                   <icon value="img/Numbered list.png"/>
                   <text value="Nhập hàng"/>
                 </properties>
               </component>
-              <component id="b43d4" class="javax.swing.JButton" default-binding="true">
+              <component id="b43d4" class="javax.swing.JButton" binding="btnbanHang">
                 <constraints/>
                 <properties>
                   <icon value="img/Price list.png"/>
                   <text value="Bán hàng"/>
                 </properties>
               </component>
-              <component id="8a5a1" class="javax.swing.JButton" default-binding="true">
+              <component id="8a5a1" class="javax.swing.JButton" binding="btnSanPham">
                 <constraints/>
                 <properties>
                   <icon value="img/Piggy.png"/>
                   <text value="Sản phẩm"/>
                 </properties>
               </component>
-              <component id="34667" class="javax.swing.JButton" default-binding="true">
+              <component id="c6860" class="javax.swing.JButton" binding="btnKhachHang">
+                <constraints/>
+                <properties>
+                  <icon value="img/Users.png"/>
+                  <text value="Khách hàng"/>
+                </properties>
+              </component>
+              <component id="34667" class="javax.swing.JButton" binding="btnBaoLoi">
                 <constraints/>
                 <properties>
                   <icon value="img/No.png"/>
@@ -244,7 +251,17 @@
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="57061" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="img/Abcxyz.jpg"/>
+              <text value=""/>
+            </properties>
+          </component>
+        </children>
       </grid>
       <grid id="77ff6" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
