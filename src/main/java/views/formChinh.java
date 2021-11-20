@@ -173,6 +173,7 @@ public class formChinh extends JFrame{
             }
         });
 
+        // nút khách hàng
         btnKhachHang.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -190,9 +191,71 @@ public class formChinh extends JFrame{
                 }
             }
         });
+
+
+        // nút loại hàng
+        mniLoaiHang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formSanPham formSanPham = new formSanPham();
+                    formSanPham.setRole(role);
+                    formSanPham.setUser(user);
+                    dispose();
+                } catch (IOException | SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        // vào nút hàng hóa
+        btnSanPham.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formHangHoa formHangHoa = new formHangHoa();
+                    formHangHoa.setRole(role);
+                    formHangHoa.setUser(user);
+                    dispose();
+                } catch (IOException | SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
+        // vào nút hàng hóa
+        mniSanPham.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formHangHoa formHangHoa = new formHangHoa();
+                    formHangHoa.setRole(role);
+                    formHangHoa.setUser(user);
+                    dispose();
+                } catch (IOException | SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
 
+
+
+    // báo lỗi trên form
     private void baoLoi(Exception ex) throws IOException {
         Log log = new Log("hieupro.txt");
         JOptionPane.showMessageDialog(null, "gặp lỗi rồi! Quay lại để gửi lỗi cho admin nha");

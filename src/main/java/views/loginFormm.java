@@ -69,13 +69,17 @@ public class loginFormm extends JFrame{
                            dem++;
                        }
 
-                        if (dem >= 5) {
+                        if (dem == 5) {
                             int i = JOptionPane.showConfirmDialog(null, "Bạn có phải là " + txtTaiKhoan.getText() + " không?", "Thông Báo", JOptionPane.YES_NO_OPTION);
 
                             if (i == JOptionPane.YES_OPTION) {
                                 QuenMatKhauu quenMatKhauu = new QuenMatKhauu();
                                 dispose();
                             }
+                        }
+                        if(dem == 6){
+                            JOptionPane.showMessageDialog(null, loginService.khoaTK(txtTaiKhoan.getText()));
+                            return;
                         }
 
             // nếu cái nhớ mk đc hhọn
