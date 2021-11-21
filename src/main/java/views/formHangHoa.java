@@ -8,13 +8,12 @@ import model.SanPhamChiTiet;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,8 +37,12 @@ public class formHangHoa extends JFrame{
     private JTextField txtColor;
     private JButton btnThemHang;
     private JTextField txtGiaVon;
+    private JLabel lblHinh;
+    private JButton btnLoadAnh;
+    private JButton btnUpdate;
     DefaultTableModel _dtm;
     boolean check = false;
+    String pic = "";
     serviceLoaiSP serviceLoaiSP = new serviceLoaiSP();
     serviceSanPham serviceSanPham = new serviceSanPham();
     serviceSanPhamChiTiet serviceSanPhamChiTiet = new serviceSanPhamChiTiet();
@@ -55,7 +58,7 @@ public class formHangHoa extends JFrame{
 
         _dtm = (DefaultTableModel) tblHangHoa.getModel();
         _dtm.setColumnIdentifiers(new String []{
-                "Mã sản phẩm", "Tên sản phẩm", "Số lượng", "Giá bán", "Giá vốn", "Size", "Màu sắc"
+                "Mã sản phẩm", "Tên sản phẩm", "Số lượng", "Giá bán", "Giá vốn", "Size", "Màu sắc", "Ngày Nhập"
         });
 
         tblHangHoa.setModel(_dtm);
@@ -175,11 +178,7 @@ public class formHangHoa extends JFrame{
                     try {
                         JOptionPane.showMessageDialog(null, serviceSanPhamChiTiet.addChiTiet(sp()));
                         loadtbl();
-                        txtColor.setText("");
-                        txtGiaBan.setText("");
-                        txtGiaVon.setText("");
-                        txtSize.setText("");
-
+                       xoaForm();
                     } catch (SQLException ex) {
                         try {
                             baoLoi(ex);
@@ -190,8 +189,106 @@ public class formHangHoa extends JFrame{
                 }
             }
         });
+
+        // phương thức load ảnh
+        btnLoadAnh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                lblHinh.setIcon(image());
+            }
+        });
+
+        // click ảnh từ tbl lên form
+        tblHangHoa.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                int i = tblHangHoa.getSelectedRow();
+
+                txtGiaBan.setText(String.valueOf(tblHangHoa.getValueAt(i,3)));
+                txtGiaVon.setText(String.valueOf(tblHangHoa.getValueAt(i,4)));
+                txtSize.setText(String.valueOf(tblHangHoa.getValueAt(i,5)));
+                txtColor.setText(String.valueOf(tblHangHoa.getValueAt(i,6)));
+
+                try {
+
+                    cbcLoaiSP.setSelectedItem(serviceLoaiSP.layTenNguonHang(String.valueOf(tblHangHoa.getValueAt(i,1))));
+                    cbcTenSP.setSelectedItem(String.valueOf(tblHangHoa.getValueAt(i,1)));
+                    SanPhamChiTiet sp = serviceSanPhamChiTiet.get_list().get(i);
+                    ImageIcon imageIcon = new ImageIcon(sp.getHinh());
+                    Image image = imageIcon.getImage();
+                    Image image1 = image.getScaledInstance(250, 250, 1000);
+                    imageIcon = new ImageIcon(image1);
+                    lblHinh.setIcon(imageIcon);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                if(!check){
+                    check = true;
+                    panelCha.removeAll();
+                    panelCha.add(panelCapNhat);
+                    panelCha.repaint();
+                    panelCha.revalidate();
+                    btnChuyenForm.setText("Quay lại danh sách");
+
+
+                }
+
+            }
+        });
+
+        // nút sửa hàng
+        btnUpdate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    int i = tblHangHoa.getSelectedRow();
+                    if(i == -1){
+                        JOptionPane.showMessageDialog(null, "Vui lòng chọn 1 sản phẩm để sửa");
+                        return;
+                    }
+                try {
+                    System.out.println(tblHangHoa.getValueAt(i,0));
+                    SanPhamChiTiet sp = sp();
+                    sp.setIdChiTiet((Integer) tblHangHoa.getValueAt(i,0));
+                    JOptionPane.showMessageDialog(null,serviceSanPhamChiTiet.updateSanPham(sp));
+                    loadtbl();
+                    xoaForm();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
+
+
+    // phương thức xóa form
+    private void xoaForm(){
+        txtColor.setText("");
+        txtGiaBan.setText("");
+        txtGiaVon.setText("");
+        txtSize.setText("");
+        pic = "";
+        lblHinh.setIcon(null);
+    }
+    //Phương thức ảnh
+    public ImageIcon image() {
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "JPG & GIF Images", "jpg", "gif", "png");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            pic = String.valueOf(chooser.getSelectedFile());
+            ImageIcon imageIcon = new ImageIcon(pic);
+            Image image = imageIcon.getImage();
+            Image image1 = image.getScaledInstance(250, 250, 1000);
+            imageIcon = new ImageIcon(image1);
+            return imageIcon;
+        }
+        return null;
+
+    }
 
     // phương thức load tbl
     private void loadtbl() throws SQLException {
@@ -199,13 +296,13 @@ public class formHangHoa extends JFrame{
         if(_dtm.getRowCount() > 0){
             _dtm.setRowCount(0);
         }
-        int stt = 1;
+
         for (SanPhamChiTiet a: serviceSanPhamChiTiet.get_list()
         ) {
             _dtm.addRow(new Object[]{
-                    stt , a.getName(), a.getSoLuong(), a.getGiaBan(), a.getGiaVon(), a.getSize(), a.getColor()
+                    a.getIdChiTiet() , a.getName(), a.getSoLuong(), a.getGiaBan(), a.getGiaVon(), a.getSize(), a.getColor(), a.getNgayNhap() == null ? "chưa có" : a.getNgayNhap()
             });
-            stt++;
+
         }
     }
 
@@ -235,6 +332,7 @@ public class formHangHoa extends JFrame{
         sp.setIdSP(serviceSanPham.get1Loai(cbcTenSP.getSelectedItem().toString()));
         sp.setGiaBan(Double.parseDouble(txtGiaBan.getText()));
         sp.setGiaVon(Double.parseDouble(txtGiaVon.getText()));
+        sp.setHinh(pic);
         return sp;
     }
 

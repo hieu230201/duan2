@@ -40,7 +40,7 @@ public class formChinh extends JFrame{
     private JButton btnKhachHang;
 
     public formChinh() throws IOException {
-        Log log = new Log("hieupro.txt");
+
         this.setTitle("Cửa sổ chính");
         this.setContentPane(mainForm);
         pack();
@@ -240,6 +240,43 @@ public class formChinh extends JFrame{
                     formHangHoa formHangHoa = new formHangHoa();
                     formHangHoa.setRole(role);
                     formHangHoa.setUser(user);
+                    dispose();
+                } catch (IOException | SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        // nút nhập hàng
+        mniNhapHang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formNhapHang formNhapHang = new formNhapHang();
+                    formNhapHang.setRole(role);
+                    formNhapHang.setUser(user);
+                    dispose();
+                } catch (IOException | SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
+        // nút nhập hàng
+        btnNhapHang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formNhapHang formNhapHang = new formNhapHang();
+                    formNhapHang.setRole(role);
+                    formNhapHang.setUser(user);
                     dispose();
                 } catch (IOException | SQLException ex) {
                     try {

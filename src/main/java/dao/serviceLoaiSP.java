@@ -53,6 +53,18 @@ public class serviceLoaiSP {
         return "Sửa không thành công";
     }
 
+    // lấy tên nguồn hàng theo tên sản phẩm
+    public String layTenNguonHang(String ten)throws SQLException{
+        String sql = "select tenLoai from loaiSanPham join SanPham SP on loaiSanPham.id = SP.id_loaisp where tensp = N'" + ten +"'";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        ResultSet rs = pm.executeQuery();
+        if(rs.next()){
+            return rs.getString(1);
+        }
+        return null;
+    }
+
+
     // lấy hết loại hàng từ db ra để đổ vào list
     public List<LoaiSP> get_list() throws SQLException {
         String sql = "select * from loaisanpham";

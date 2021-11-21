@@ -7,8 +7,9 @@ public class SanPhamChiTiet extends SanPham {
     private double giaBan, giaVon;
     private String ngayNhap;
     private int trangThai;
+    private String hinh;
 
-    public SanPhamChiTiet(int id, String ten, int id1, String name, String moTa, int idChiTiet, String color, String size, int soLuong, double giaBan, double giaVon, String ngayNhap, int trangThai) {
+    public SanPhamChiTiet(int id, String ten, int id1, String name, String moTa, int idChiTiet, String color, String size, int soLuong, double giaBan, double giaVon, String ngayNhap, int trangThai, String hinh) {
         super(id, ten, id1, name, moTa);
         this.idChiTiet = idChiTiet;
         this.color = color;
@@ -18,6 +19,7 @@ public class SanPhamChiTiet extends SanPham {
         this.giaVon = giaVon;
         this.ngayNhap = ngayNhap;
         this.trangThai = trangThai;
+        this.hinh = hinh;
     }
 
     public SanPhamChiTiet() {
@@ -85,5 +87,13 @@ public class SanPhamChiTiet extends SanPham {
 
     public void setTrangThai(int trangThai) {
         this.trangThai = trangThai;
+    }
+
+    public String getHinh() {
+        return hinh;
+    }
+
+    public void setHinh(String hinh) {
+        this.hinh = hinh;
     }
 }

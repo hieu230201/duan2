@@ -64,7 +64,7 @@ public class serviceNguonHang {
     }
 
 
-    //Sửa Nhân Viên
+    //Sửa Nguồn hàng
     public String updateNH(NguonHang nguonHang, int id) throws SQLException {
         String sql = "update nguonhang set tenNguonHang= ?, diachi = ?, sdt = ? WHERE id = ?";
         PreparedStatement pm = con.con().prepareStatement(sql);
@@ -78,6 +78,7 @@ public class serviceNguonHang {
         return "Sửa Thất Bại";
 
     }
+
 
 
     //Lấy danh sách nguồn hàng từ database cho vô list
@@ -99,10 +100,31 @@ public class serviceNguonHang {
     public int getIndex(String sdt) {
         for (int i = 0; i < _list.size(); i++) {
             if (_list.get(i).getSdt().equals(sdt)) {
-                return i;
+                return _list.get(i).getId();
             }
         }
         return -1;
+    }
+
+
+    // Tìm nguồn hàng  đang làm việc theo tên
+    public int getID(String name) {
+        for (int i = 0; i < _list.size(); i++) {
+            if (_list.get(i).getTenNguonHang().equals(name)) {
+                return _list.get(i).getId();
+            }
+        }
+        return -1;
+    }
+
+    // Tìm nguồn hàng tên nguồn hàng theo ID
+    public String getTen(int id) {
+        for (int i = 0; i < _list.size(); i++) {
+            if (_list.get(i).getId() == id) {
+                return _list.get(i).getTenNguonHang();
+            }
+        }
+        return null;
     }
 
 
