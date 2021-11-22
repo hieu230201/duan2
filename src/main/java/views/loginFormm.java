@@ -6,6 +6,7 @@ import dao.LoginService;
 import model.NhanVien;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -16,7 +17,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class loginFormm extends JFrame{
+public class loginFormm extends JFrame {
 
     private JPanel mainPanel;
     private JTextField txtTaiKhoan;
@@ -34,7 +35,7 @@ public class loginFormm extends JFrame{
         this.setTitle("Đăng Nhập");
         this.setContentPane(mainPanel);
         this.setLocationRelativeTo(null);
-        this.setSize(700,500);
+        this.setSize(700, 500);
         this.setVisible(true);
         this.setDefaultCloseOperation(2);
 
@@ -61,13 +62,13 @@ public class loginFormm extends JFrame{
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(loi()){
+                if (loi()) {
                     try {
 
                         nv = loginService.login(txtTaiKhoan.getText(), String.valueOf(txtPass.getPassword()));
-                       if(nv == null){
-                           dem++;
-                       }
+                        if (nv == null) {
+                            dem++;
+                        }
 
                         if (dem == 5) {
                             int i = JOptionPane.showConfirmDialog(null, "Bạn có phải là " + txtTaiKhoan.getText() + " không?", "Thông Báo", JOptionPane.YES_NO_OPTION);
@@ -77,20 +78,20 @@ public class loginFormm extends JFrame{
                                 dispose();
                             }
                         }
-                        if(dem == 6){
+                        if (dem == 6) {
                             JOptionPane.showMessageDialog(null, loginService.khoaTK(txtTaiKhoan.getText()));
                             return;
                         }
 
-            // nếu cái nhớ mk đc hhọn
-                        if(ckcRemember.isSelected()){
-                           loginService.remember(txtTaiKhoan.getText(), String.valueOf(txtPass.getText()));
-                       }else{
-                           loginService.remember(null, null);
-                       }
+                        // nếu cái nhớ mk đc hhọn
+                        if (ckcRemember.isSelected()) {
+                            loginService.remember(txtTaiKhoan.getText(), String.valueOf(txtPass.getText()));
+                        } else {
+                            loginService.remember(null, null);
+                        }
 
 
-                       JOptionPane.showMessageDialog(null, "Chào mừng " + nv.getManv() + " đã đến với chương trình");
+                        JOptionPane.showMessageDialog(null, "Chào mừng " + nv.getManv() + " đã đến với chương trình");
                         formChinh formChinh = new formChinh();
                         formChinh.setUser(txtTaiKhoan.getText());
                         formChinh.setRole(nv.getRole());
@@ -121,14 +122,13 @@ public class loginFormm extends JFrame{
     }
 
 
-
     // phương thức check lỗi
-    private boolean loi(){
-        if(txtTaiKhoan.getText().isEmpty() || txtTaiKhoan.getText().isBlank()){
+    private boolean loi() {
+        if (txtTaiKhoan.getText().isEmpty() || txtTaiKhoan.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Tài khoản không được để trống", "Lỗi", 1);
             return false;
         }
-        if(txtPass.getText().isEmpty() || txtPass.getText().isBlank()){
+        if (txtPass.getText().isEmpty() || txtPass.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Mật khẩu không được để trống", "Lỗi", 1);
             return false;
         }
@@ -151,9 +151,9 @@ public class loginFormm extends JFrame{
     }
 
 
-
     // main chạy chương trình
     public static void main(String[] args) throws SQLException {
         new loginFormm();
     }
+
 }

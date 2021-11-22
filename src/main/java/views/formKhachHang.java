@@ -5,6 +5,7 @@ import model.KhachHang;
 import dao.serviceKhachHang;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +13,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class formKhachHang extends JFrame{
+public class formKhachHang extends JFrame {
     private String user;
     private int role;
     private JPanel mainPanel;
@@ -25,18 +26,19 @@ public class formKhachHang extends JFrame{
     private JButton btnMoi;
     DefaultTableModel _dtm;
     serviceKhachHang serviceKhachHang = new serviceKhachHang();
+
     public formKhachHang() throws SQLException, IOException {
 
         this.setTitle("Thượng đế của cửa hàng");
         this.setContentPane(mainPanel);
-        this.setSize(500,300);
+        this.setSize(500, 300);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(2);
         this.setResizable(false); // chống chỉnh sửa size frame
         this.setVisible(true);
         _dtm = (DefaultTableModel) tblKhachHang.getModel();
-        _dtm.setColumnIdentifiers(new String []{
-                "Họ tên",  "Số Điện Thoại", "Điểm tích lũy"
+        _dtm.setColumnIdentifiers(new String[]{
+                "Họ tên", "Số Điện Thoại", "Điểm tích lũy"
         });
         tblKhachHang.setModel(_dtm);
         loadtbl();
@@ -85,20 +87,20 @@ public class formKhachHang extends JFrame{
         btnThem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    KhachHang khachHang = new KhachHang(1, txtName.getText(), txtSdt.getText(), 0);
-                    if(loi()){
+                KhachHang khachHang = new KhachHang(1, txtName.getText(), txtSdt.getText(), 0);
+                if (loi()) {
+                    try {
+                        JOptionPane.showMessageDialog(null, serviceKhachHang.themKhachHang(khachHang));
+                        loadtbl();
+                        xoaForm();
+                    } catch (SQLException ex) {
                         try {
-                            JOptionPane.showMessageDialog(null, serviceKhachHang.themKhachHang(khachHang));
-                            loadtbl();
-                            xoaForm();
-                        } catch (SQLException ex) {
-                            try {
-                                baoLoi(ex);
-                            } catch (IOException exc) {
-                                exc.printStackTrace();
-                            }
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
                         }
                     }
+                }
             }
         });
 
@@ -106,7 +108,7 @@ public class formKhachHang extends JFrame{
         btnMoi.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                            xoaForm();
+                xoaForm();
             }
         });
 
@@ -146,7 +148,7 @@ public class formKhachHang extends JFrame{
     }
 
     // phương thức check lỗi
-    private boolean loi(){
+    private boolean loi() {
 //        if (txtName.getText().isEmpty() || txtName.getText().isBlank()) {
 //            JOptionPane.showMessageDialog(null, "Tên không được để trống", "Cảnh Báo", 2);
 //            txtName.requestFocus();
@@ -182,20 +184,21 @@ public class formKhachHang extends JFrame{
         return true;
     }
 
-    private void xoaForm(){
+    private void xoaForm() {
         txtName.setText("");
         txtSdt.setText("");
     }
-
 
 
     // set quyền + báo lỗi form
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
+
     private void baoLoi(Exception ex) throws IOException {
         Log log = new Log("hieupro.txt");
         log.logger.setLevel(Level.WARNING);
@@ -216,10 +219,8 @@ public class formKhachHang extends JFrame{
     }
 
 
-
-
-
     public static void main(String[] args) throws SQLException, IOException {
         new formKhachHang();
     }
+
 }

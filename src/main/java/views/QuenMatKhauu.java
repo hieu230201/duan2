@@ -8,6 +8,7 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -21,7 +22,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
 
-public class QuenMatKhauu extends JFrame{
+public class QuenMatKhauu extends JFrame {
     private JTextField txtEmail;
     private JButton btnLayCode;
     private JTextField txtCode;
@@ -74,7 +75,7 @@ public class QuenMatKhauu extends JFrame{
                     Random random = new Random();
                     code = random.nextInt(9999);
                     String user = dotenv.get("MY_ENV_VAR1");
-                    String pass = dotenv.get("MY_EVV_VAR2"); 
+                    String pass = dotenv.get("MY_EVV_VAR2");
                     String to = txtEmail.getText();
                     String subject = "Mã để đổi mật khẩu";
                     String message = "Đây là mã của bạn " + code;
@@ -143,7 +144,7 @@ public class QuenMatKhauu extends JFrame{
         btnDoiPass.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(loi()){
+                if (loi()) {
                     try {
                         JOptionPane.showMessageDialog(null, serviceNhanVien.updatePassNVQuen(txtTaiKhoan.getText(), String.valueOf(txtPassNew.getPassword()), txtEmail.getText()));
                     } catch (SQLException ex) {

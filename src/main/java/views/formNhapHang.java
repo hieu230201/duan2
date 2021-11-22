@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,11 +21,12 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 
-public class formNhapHang extends JFrame{
+public class formNhapHang extends JFrame {
     private String user;
     private int role;
     private JPanel mainPanel;
@@ -50,7 +52,8 @@ public class formNhapHang extends JFrame{
     serviceSanPhamChiTiet serviceSanPhamChiTiet = new serviceSanPhamChiTiet();
     serviceNhapHang serviceNhapHang = new serviceNhapHang();
     boolean check = false;
-    boolean check1 =false;
+    boolean check1 = false;
+
     public formNhapHang() throws IOException, SQLException {
         this.setTitle("Cửa sổ nhập hàng");
         this.setContentPane(mainPanel);
@@ -61,14 +64,14 @@ public class formNhapHang extends JFrame{
         _dtm = (DefaultTableModel) tblHangHoa.getModel();
         _dtmHoaDon = (DefaultTableModel) tblHoaDonNhap.getModel();
         _dtmLuuTru = (DefaultTableModel) tblLuuTru.getModel();
-        _dtm.setColumnIdentifiers(new String []{
+        _dtm.setColumnIdentifiers(new String[]{
                 "Mã sản phẩm", "Tên sản phẩm", "Loại", "Size", "Màu sắc", "Số lượng", "Giá nhập"
         });
-        _dtmHoaDon.setColumnIdentifiers(new String []{
+        _dtmHoaDon.setColumnIdentifiers(new String[]{
                 "Mã hóa đơn", "Người nhập", "Nguồn hàng", "Ngày", "Tổng tiền"
         });
         _dtmLuuTru.setColumnIdentifiers(new String[]{
-                "Mã sản phẩm", "Tên sản phẩm","Nguồn Hàng", "Loại", "Size", "Màu sắc", "Số lượng", "Giá nhập"
+                "Mã sản phẩm", "Tên sản phẩm", "Nguồn Hàng", "Loại", "Size", "Màu sắc", "Số lượng", "Giá nhập"
         });
 
         loadCbcNguonHang();
@@ -183,10 +186,10 @@ public class formNhapHang extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                    int i = tblHangHoa.getSelectedRow();
-                    txtMaSP.setText(String.valueOf(tblHangHoa.getValueAt(i, 0)));
-                    txtGiaNhap.setText(String.valueOf(tblHangHoa.getValueAt(i, 6)));
-                    lblTienLe.setText(String.valueOf((int) (Double.parseDouble(txtGiaNhap.getText()) * Integer.parseInt(cbcSoLuong.getSelectedItem().toString()))));
+                int i = tblHangHoa.getSelectedRow();
+                txtMaSP.setText(String.valueOf(tblHangHoa.getValueAt(i, 0)));
+                txtGiaNhap.setText(String.valueOf(tblHangHoa.getValueAt(i, 6)));
+                lblTienLe.setText(String.valueOf((int) (Double.parseDouble(txtGiaNhap.getText()) * Integer.parseInt(cbcSoLuong.getSelectedItem().toString()))));
 
 
             }
@@ -205,51 +208,51 @@ public class formNhapHang extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                int row [] = tblHangHoa.getSelectedRows();
-                if(row.length == 1){
-                    if(check){
+                int row[] = tblHangHoa.getSelectedRows();
+                if (row.length == 1) {
+                    if (check) {
                         int dem = 0;
                         for (int j = 0; j < _dtmLuuTru.getRowCount(); j++) {
-                            if(!cbcNguonhang.getSelectedItem().toString().equals(String.valueOf(tblLuuTru.getValueAt(j,2)))){
+                            if (!cbcNguonhang.getSelectedItem().toString().equals(String.valueOf(tblLuuTru.getValueAt(j, 2)))) {
                                 dem++;
                                 JOptionPane.showMessageDialog(null, "Đơn hàng phải tạo ở cùng một nguồn hàng");
                                 break;
                             }
                         }
-                        if(dem == 0){
+                        if (dem == 0) {
                             check = false;
                         }
                     }
-                    if(check1){
+                    if (check1) {
                         int dem = 0;
                         for (int j = 0; j < _dtmLuuTru.getRowCount(); j++) {
-                            if(String.valueOf(tblHangHoa.getValueAt(row[0],0)).equals(String.valueOf(tblLuuTru.getValueAt(j,0)))){
-                                int soLuong = Integer.parseInt(cbcSoLuong.getSelectedItem().toString()) + Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j,6)));
-                                tblLuuTru.setValueAt(soLuong, j,6);
-                                int tong = (int) (soLuong * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(row[0],6))));
-                                tblLuuTru.setValueAt(tong, j , 7);
+                            if (String.valueOf(tblHangHoa.getValueAt(row[0], 0)).equals(String.valueOf(tblLuuTru.getValueAt(j, 0)))) {
+                                int soLuong = Integer.parseInt(cbcSoLuong.getSelectedItem().toString()) + Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 6)));
+                                tblLuuTru.setValueAt(soLuong, j, 6);
+                                int tong = (int) (soLuong * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(row[0], 6))));
+                                tblLuuTru.setValueAt(tong, j, 7);
                                 dem++;
                                 break;
                             }
                         }
-                        if(dem == 0){
+                        if (dem == 0) {
                             check1 = false;
                         }
 
                     }
-                    if(!check && !check1){
+                    if (!check && !check1) {
                         _dtmLuuTru.addRow(new Object[]{
-                                String.valueOf(tblHangHoa.getValueAt(row[0],0)),String.valueOf(tblHangHoa.getValueAt(row[0],1)),cbcNguonhang.getSelectedItem().toString(),
-                                String.valueOf(tblHangHoa.getValueAt(row[0],2)),String.valueOf(tblHangHoa.getValueAt(row[0],3)),
-                                String.valueOf(tblHangHoa.getValueAt(row[0],4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
+                                String.valueOf(tblHangHoa.getValueAt(row[0], 0)), String.valueOf(tblHangHoa.getValueAt(row[0], 1)), cbcNguonhang.getSelectedItem().toString(),
+                                String.valueOf(tblHangHoa.getValueAt(row[0], 2)), String.valueOf(tblHangHoa.getValueAt(row[0], 3)),
+                                String.valueOf(tblHangHoa.getValueAt(row[0], 4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
                         });
                         check = true;
                         check1 = true;
                     }
                 }
-                if(row.length > 1){
-                    if(_dtmLuuTru.getRowCount() > 0){
-                        if(!cbcNguonhang.getSelectedItem().toString().equals(tblLuuTru.getValueAt(0,2))){
+                if (row.length > 1) {
+                    if (_dtmLuuTru.getRowCount() > 0) {
+                        if (!cbcNguonhang.getSelectedItem().toString().equals(tblLuuTru.getValueAt(0, 2))) {
                             JOptionPane.showMessageDialog(null, "phải chung một nguồn hàng ở 1 đơn");
                         }
                         ArrayList<Integer> arr = new ArrayList<>();
@@ -258,11 +261,11 @@ public class formNhapHang extends JFrame{
                         }
                         for (int j = 0; j < _dtmLuuTru.getRowCount(); j++) {
                             for (int i = 0; i < arr.size(); i++) {
-                                if(String.valueOf(tblHangHoa.getValueAt(arr.get(i),0)).equals(String.valueOf(tblLuuTru.getValueAt(j,0)))){
-                                    int soLuong = Integer.parseInt(cbcSoLuong.getSelectedItem().toString()) + Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j,6)));
-                                    tblLuuTru.setValueAt(soLuong, j,6);
-                                    int tong = (int) (soLuong * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(arr.get(i),6))));
-                                    tblLuuTru.setValueAt(tong, j , 7);
+                                if (String.valueOf(tblHangHoa.getValueAt(arr.get(i), 0)).equals(String.valueOf(tblLuuTru.getValueAt(j, 0)))) {
+                                    int soLuong = Integer.parseInt(cbcSoLuong.getSelectedItem().toString()) + Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 6)));
+                                    tblLuuTru.setValueAt(soLuong, j, 6);
+                                    int tong = (int) (soLuong * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(arr.get(i), 6))));
+                                    tblLuuTru.setValueAt(tong, j, 7);
                                     arr.remove(i);
                                     break;
                                 }
@@ -270,30 +273,29 @@ public class formNhapHang extends JFrame{
                         }
                         for (int i = 0; i < arr.size(); i++) {
                             _dtmLuuTru.addRow(new Object[]{
-                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i),0)),String.valueOf(tblHangHoa.getValueAt(arr.get(i),1)),cbcNguonhang.getSelectedItem().toString(),
-                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i),2)),String.valueOf(tblHangHoa.getValueAt(arr.get(i),3)),
-                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i),4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
+                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i), 0)), String.valueOf(tblHangHoa.getValueAt(arr.get(i), 1)), cbcNguonhang.getSelectedItem().toString(),
+                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i), 2)), String.valueOf(tblHangHoa.getValueAt(arr.get(i), 3)),
+                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i), 4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
                             });
                         }
 
-                    }else {
-                        for (int rows: row
-                             ) {
+                    } else {
+                        for (int rows : row
+                        ) {
                             _dtmLuuTru.addRow(new Object[]{
-                                    String.valueOf(tblHangHoa.getValueAt(rows,0)),String.valueOf(tblHangHoa.getValueAt(rows,1)),cbcNguonhang.getSelectedItem().toString(),
-                                    String.valueOf(tblHangHoa.getValueAt(rows,2)),String.valueOf(tblHangHoa.getValueAt(rows,3)),
-                                    String.valueOf(tblHangHoa.getValueAt(rows,4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
+                                    String.valueOf(tblHangHoa.getValueAt(rows, 0)), String.valueOf(tblHangHoa.getValueAt(rows, 1)), cbcNguonhang.getSelectedItem().toString(),
+                                    String.valueOf(tblHangHoa.getValueAt(rows, 2)), String.valueOf(tblHangHoa.getValueAt(rows, 3)),
+                                    String.valueOf(tblHangHoa.getValueAt(rows, 4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
                             });
                         }
                     }
                 }
 
 
-
-                if(_dtmLuuTru.getRowCount() > 0) {
+                if (_dtmLuuTru.getRowCount() > 0) {
                     int tong = 0;
                     for (int j = 0; j < _dtmLuuTru.getRowCount(); j++) {
-                        tong+=Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j,7)));
+                        tong += Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 7)));
                     }
                     lblTongTien.setText(String.valueOf(tong));
                 }
@@ -306,11 +308,11 @@ public class formNhapHang extends JFrame{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                    serviceNhapHang.khoiTaoDonHang(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()),String.valueOf(java.time.LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
-                    int id = serviceNhapHang.hoaDon(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()),String.valueOf(java.time.LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
+                    serviceNhapHang.khoiTaoDonHang(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
+                    int id = serviceNhapHang.hoaDon(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
                     for (int i = 0; i < _dtmLuuTru.getRowCount(); i++) {
-                        serviceSanPhamChiTiet.updateDay(Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,0))));
-                        serviceNhapHang.khoiTaoChiTietDonHang(id, Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,0))),Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,6))),Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,7))));
+                        serviceSanPhamChiTiet.updateDay(Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 0))));
+                        serviceNhapHang.khoiTaoChiTietDonHang(id, Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 0))), Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 6))), Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 7))));
                     }
                     JOptionPane.showMessageDialog(null, "Đã tạo hóa đơn nhập hàng");
 
@@ -326,14 +328,14 @@ public class formNhapHang extends JFrame{
         btnXoa.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               int row [] = tblLuuTru.getSelectedRows();
+                int row[] = tblLuuTru.getSelectedRows();
                 for (int i = row.length - 1; i >= 0; i--) {
                     _dtmLuuTru.removeRow(row[i]);
                 }
-                if(_dtmLuuTru.getRowCount() > 0) {
+                if (_dtmLuuTru.getRowCount() > 0) {
                     int tong = 0;
                     for (int j = 0; j < _dtmLuuTru.getRowCount(); j++) {
-                        tong+=Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j,7)));
+                        tong += Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 7)));
                     }
                     lblTongTien.setText(String.valueOf(tong));
                 }
@@ -345,14 +347,14 @@ public class formNhapHang extends JFrame{
     // đổ dữ liệu vào tbl nhập hàng
     private void loadTblNhapHang() throws SQLException {
         _dtm = (DefaultTableModel) tblHangHoa.getModel();
-        if(_dtm.getRowCount() > 0){
+        if (_dtm.getRowCount() > 0) {
             _dtm.setRowCount(0);
         }
 
-        for (SanPhamChiTiet a: serviceSanPhamChiTiet.get_list()
+        for (SanPhamChiTiet a : serviceSanPhamChiTiet.get_list()
         ) {
             _dtm.addRow(new Object[]{
-                    a.getIdChiTiet() , a.getName(), a.getTen(), a.getSize(), a.getColor(), a.getSoLuong(), a.getGiaVon()
+                    a.getIdChiTiet(), a.getName(), a.getTen(), a.getSize(), a.getColor(), a.getSoLuong(), a.getGiaVon()
             });
         }
 
@@ -363,11 +365,11 @@ public class formNhapHang extends JFrame{
     // đổ dữ liệu vào tbl hóa đơn nhập hàng
     private void loadTblHoaDonNhapHang() throws SQLException {
         _dtmHoaDon = (DefaultTableModel) tblHoaDonNhap.getModel();
-        if(_dtmHoaDon.getRowCount() > 0){
+        if (_dtmHoaDon.getRowCount() > 0) {
             _dtmHoaDon.setRowCount(0);
         }
-        for (Nhaphang a: serviceNhapHang.get_lst()
-             ) {
+        for (Nhaphang a : serviceNhapHang.get_lst()
+        ) {
             _dtmHoaDon.addRow(new Object[]{
                     a.getIdNhapHang(), a.getMaNhanVien(), serviceNguonHang.getTen(a.getIdNguonHang()), a.getNgayNhap(), a.getGiaNhap()
             });
@@ -375,8 +377,8 @@ public class formNhapHang extends JFrame{
     }
 
     // đổ dữ liệu vào cbc số lượng
-    private void loadCBCSoLuong(){
-            cbcSoLuong.removeAllItems();
+    private void loadCBCSoLuong() {
+        cbcSoLuong.removeAllItems();
 
         for (int i = 1; i <= 500; i++) {
             cbcSoLuong.addItem(i);
@@ -387,8 +389,8 @@ public class formNhapHang extends JFrame{
     // đổ dữ liệu vào cbc nguồn hàng
     private void loadCbcNguonHang() throws SQLException {
         cbcNguonhang.removeAllItems();
-        for (NguonHang a: serviceNguonHang.getlist()
-             ) {
+        for (NguonHang a : serviceNguonHang.getlist()
+        ) {
             cbcNguonhang.addItem(a.getTenNguonHang());
         }
     }
@@ -398,6 +400,7 @@ public class formNhapHang extends JFrame{
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
@@ -425,4 +428,5 @@ public class formNhapHang extends JFrame{
     public static void main(String[] args) throws IOException, SQLException {
         new formNhapHang();
     }
+
 }

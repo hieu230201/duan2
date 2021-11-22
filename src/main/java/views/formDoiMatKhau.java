@@ -4,6 +4,8 @@ import javax.swing.*;
 
 import dao.Log;
 import dao.serviceNhanVien;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -14,7 +16,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class formDoiMatKhau extends JFrame{
+public class formDoiMatKhau extends JFrame {
     private String user;
     private int role;
     private JPasswordField txtPassOld;
@@ -32,7 +34,7 @@ public class formDoiMatKhau extends JFrame{
         this.setTitle("Đổi Mật Khẩu");
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(2);
-        this.setSize(400,300);
+        this.setSize(400, 300);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.setResizable(false); // chống chỉnh sửa size frame
@@ -83,7 +85,7 @@ public class formDoiMatKhau extends JFrame{
         btnDoiPass.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (loi()){
+                if (loi()) {
                     try {
                         JOptionPane.showMessageDialog(null, serviceNhanVienn.doiMatKhau(user, String.valueOf(txtPassNew.getPassword()), String.valueOf(txtPassOld.getPassword())));
                     } catch (SQLException ex) {
@@ -104,21 +106,21 @@ public class formDoiMatKhau extends JFrame{
 
 
     // nút check lỗi form
-    private boolean loi(){
-        if(String.valueOf(txtPassNew.getPassword()).isBlank() || String.valueOf(txtPassNew.getPassword()).isEmpty()){
+    private boolean loi() {
+        if (String.valueOf(txtPassNew.getPassword()).isBlank() || String.valueOf(txtPassNew.getPassword()).isEmpty()) {
             JOptionPane.showMessageDialog(null, "không được để trống mật khẩu mới");
             return false;
         }
 
-        if(String.valueOf(txtPassOld.getPassword()).isBlank() || String.valueOf(txtPassOld.getPassword()).isEmpty()){
+        if (String.valueOf(txtPassOld.getPassword()).isBlank() || String.valueOf(txtPassOld.getPassword()).isEmpty()) {
             JOptionPane.showMessageDialog(null, "không được để trống mật khẩu cũ");
             return false;
         }
-        if(String.valueOf(txtConfirm.getPassword()).isBlank() || String.valueOf(txtConfirm.getPassword()).isEmpty()){
+        if (String.valueOf(txtConfirm.getPassword()).isBlank() || String.valueOf(txtConfirm.getPassword()).isEmpty()) {
             JOptionPane.showMessageDialog(null, "vui lòng xác nhận mã");
             return false;
         }
-        if(!String.valueOf(txtConfirm.getPassword()).equals(String.valueOf(txtPassNew.getPassword()))){
+        if (!String.valueOf(txtConfirm.getPassword()).equals(String.valueOf(txtPassNew.getPassword()))) {
             JOptionPane.showMessageDialog(null, "xác nhận lại mật khẩu");
             txtConfirm.setText("");
             return false;
@@ -127,7 +129,7 @@ public class formDoiMatKhau extends JFrame{
             JOptionPane.showMessageDialog(null, "mật khẩu mới vui lòng là chữ la tinh hoặc số", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        return  true;
+        return true;
     }
 
 
@@ -154,16 +156,18 @@ public class formDoiMatKhau extends JFrame{
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
 
     // đọc dữ liệu phân quyền lên form
     private void luuText() {
-        System.out.println(user + " bên form đổi mk" );
+        System.out.println(user + " bên form đổi mk");
     }
 
     public static void main(String[] args) throws IOException {
         new formDoiMatKhau();
     }
+
 }

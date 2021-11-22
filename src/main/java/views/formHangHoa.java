@@ -20,7 +20,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class formHangHoa extends JFrame{
+public class formHangHoa extends JFrame {
     private String user;
     private int role;
     private JPanel mainPanel;
@@ -57,7 +57,7 @@ public class formHangHoa extends JFrame{
         this.setDefaultCloseOperation(2);
 
         _dtm = (DefaultTableModel) tblHangHoa.getModel();
-        _dtm.setColumnIdentifiers(new String []{
+        _dtm.setColumnIdentifiers(new String[]{
                 "Mã sản phẩm", "Tên sản phẩm", "Số lượng", "Giá bán", "Giá vốn", "Size", "Màu sắc", "Ngày Nhập"
         });
 
@@ -71,7 +71,6 @@ public class formHangHoa extends JFrame{
         loadCBC();
         loadtbl();
         loadCBCSP();
-
 
 
         // mở chương trình và lưu giá trị
@@ -106,7 +105,7 @@ public class formHangHoa extends JFrame{
         btnChuyenForm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!check){
+                if (!check) {
                     check = true;
                     panelCha.removeAll();
                     panelCha.add(panelCapNhat);
@@ -117,12 +116,12 @@ public class formHangHoa extends JFrame{
                     return;
                 }
 
-                    check = false;
-                    panelCha.removeAll();
-                    panelCha.add(panelBang);
-                    panelCha.repaint();
-                    panelCha.revalidate();
-                    btnChuyenForm.setText("Thêm hàng hóa");
+                check = false;
+                panelCha.removeAll();
+                panelCha.add(panelBang);
+                panelCha.repaint();
+                panelCha.revalidate();
+                btnChuyenForm.setText("Thêm hàng hóa");
             }
         });
 
@@ -174,11 +173,11 @@ public class formHangHoa extends JFrame{
         btnThemHang.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(loi()){
+                if (loi()) {
                     try {
                         JOptionPane.showMessageDialog(null, serviceSanPhamChiTiet.addChiTiet(sp()));
                         loadtbl();
-                       xoaForm();
+                        xoaForm();
                     } catch (SQLException ex) {
                         try {
                             baoLoi(ex);
@@ -205,15 +204,15 @@ public class formHangHoa extends JFrame{
 
                 int i = tblHangHoa.getSelectedRow();
 
-                txtGiaBan.setText(String.valueOf(tblHangHoa.getValueAt(i,3)));
-                txtGiaVon.setText(String.valueOf(tblHangHoa.getValueAt(i,4)));
-                txtSize.setText(String.valueOf(tblHangHoa.getValueAt(i,5)));
-                txtColor.setText(String.valueOf(tblHangHoa.getValueAt(i,6)));
+                txtGiaBan.setText(String.valueOf(tblHangHoa.getValueAt(i, 3)));
+                txtGiaVon.setText(String.valueOf(tblHangHoa.getValueAt(i, 4)));
+                txtSize.setText(String.valueOf(tblHangHoa.getValueAt(i, 5)));
+                txtColor.setText(String.valueOf(tblHangHoa.getValueAt(i, 6)));
 
                 try {
 
-                    cbcLoaiSP.setSelectedItem(serviceLoaiSP.layTenNguonHang(String.valueOf(tblHangHoa.getValueAt(i,1))));
-                    cbcTenSP.setSelectedItem(String.valueOf(tblHangHoa.getValueAt(i,1)));
+                    cbcLoaiSP.setSelectedItem(serviceLoaiSP.layTenNguonHang(String.valueOf(tblHangHoa.getValueAt(i, 1))));
+                    cbcTenSP.setSelectedItem(String.valueOf(tblHangHoa.getValueAt(i, 1)));
                     SanPhamChiTiet sp = serviceSanPhamChiTiet.get_list().get(i);
                     ImageIcon imageIcon = new ImageIcon(sp.getHinh());
                     Image image = imageIcon.getImage();
@@ -223,7 +222,7 @@ public class formHangHoa extends JFrame{
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
-                if(!check){
+                if (!check) {
                     check = true;
                     panelCha.removeAll();
                     panelCha.add(panelCapNhat);
@@ -241,16 +240,16 @@ public class formHangHoa extends JFrame{
         btnUpdate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    int i = tblHangHoa.getSelectedRow();
-                    if(i == -1){
-                        JOptionPane.showMessageDialog(null, "Vui lòng chọn 1 sản phẩm để sửa");
-                        return;
-                    }
+                int i = tblHangHoa.getSelectedRow();
+                if (i == -1) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn 1 sản phẩm để sửa");
+                    return;
+                }
                 try {
-                    System.out.println(tblHangHoa.getValueAt(i,0));
+                    System.out.println(tblHangHoa.getValueAt(i, 0));
                     SanPhamChiTiet sp = sp();
-                    sp.setIdChiTiet((Integer) tblHangHoa.getValueAt(i,0));
-                    JOptionPane.showMessageDialog(null,serviceSanPhamChiTiet.updateSanPham(sp));
+                    sp.setIdChiTiet((Integer) tblHangHoa.getValueAt(i, 0));
+                    JOptionPane.showMessageDialog(null, serviceSanPhamChiTiet.updateSanPham(sp));
                     loadtbl();
                     xoaForm();
                 } catch (SQLException ex) {
@@ -261,9 +260,8 @@ public class formHangHoa extends JFrame{
     }
 
 
-
     // phương thức xóa form
-    private void xoaForm(){
+    private void xoaForm() {
         txtColor.setText("");
         txtGiaBan.setText("");
         txtGiaVon.setText("");
@@ -271,6 +269,7 @@ public class formHangHoa extends JFrame{
         pic = "";
         lblHinh.setIcon(null);
     }
+
     //Phương thức ảnh
     public ImageIcon image() {
         JFileChooser chooser = new JFileChooser();
@@ -293,14 +292,14 @@ public class formHangHoa extends JFrame{
     // phương thức load tbl
     private void loadtbl() throws SQLException {
         _dtm = (DefaultTableModel) tblHangHoa.getModel();
-        if(_dtm.getRowCount() > 0){
+        if (_dtm.getRowCount() > 0) {
             _dtm.setRowCount(0);
         }
 
-        for (SanPhamChiTiet a: serviceSanPhamChiTiet.get_list()
+        for (SanPhamChiTiet a : serviceSanPhamChiTiet.get_list()
         ) {
             _dtm.addRow(new Object[]{
-                    a.getIdChiTiet() , a.getName(), a.getSoLuong(), a.getGiaBan(), a.getGiaVon(), a.getSize(), a.getColor(), a.getNgayNhap() == null ? "chưa có" : a.getNgayNhap()
+                    a.getIdChiTiet(), a.getName(), a.getSoLuong(), a.getGiaBan(), a.getGiaVon(), a.getSize(), a.getColor(), a.getNgayNhap() == null ? "chưa có" : a.getNgayNhap()
             });
 
         }
@@ -309,17 +308,17 @@ public class formHangHoa extends JFrame{
     // load loại sản phẩm cbc
     private void loadCBC() throws SQLException {
         cbcLoaiSP.removeAllItems();
-        for (LoaiSP a: serviceLoaiSP.get_list()
+        for (LoaiSP a : serviceLoaiSP.get_list()
         ) {
             cbcLoaiSP.addItem(a.getTen());
         }
     }
-    
+
     // load sản phẩm dựa theo tên loại sản phẩm
-    private void loadCBCSP() throws SQLException{
+    private void loadCBCSP() throws SQLException {
         cbcTenSP.removeAllItems();
         for (SanPham a : serviceSanPham.getSP(cbcLoaiSP.getSelectedItem().toString())
-                ) {
+        ) {
             cbcTenSP.addItem(a.getName());
         }
     }
@@ -338,20 +337,20 @@ public class formHangHoa extends JFrame{
 
 
     // phương thức check lỗi
-    private boolean loi(){
-        if(txtColor.getText().isEmpty() || txtColor.getText().isBlank()){
+    private boolean loi() {
+        if (txtColor.getText().isEmpty() || txtColor.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Màu không được để trống");
             return false;
         }
-        if(txtGiaBan.getText().isEmpty() || txtGiaBan.getText().isBlank()){
+        if (txtGiaBan.getText().isEmpty() || txtGiaBan.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Giá bán không được để trống");
             return false;
         }
-        if(txtGiaVon.getText().isEmpty() || txtGiaVon.getText().isBlank()){
+        if (txtGiaVon.getText().isEmpty() || txtGiaVon.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Giá vốn không được để trống");
             return false;
         }
-        if(txtSize.getText().isEmpty() || txtSize.getText().isBlank()){
+        if (txtSize.getText().isEmpty() || txtSize.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Size không được để trống");
             return false;
         }
@@ -362,6 +361,7 @@ public class formHangHoa extends JFrame{
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
@@ -389,4 +389,5 @@ public class formHangHoa extends JFrame{
     public static void main(String[] args) throws IOException, SQLException {
         new formHangHoa();
     }
+
 }

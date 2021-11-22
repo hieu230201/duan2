@@ -12,6 +12,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,7 +20,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class formNhanVien extends JFrame{
+public class formNhanVien extends JFrame {
     private String user;
     private int role;
     private JPanel mainPanel;
@@ -43,17 +44,17 @@ public class formNhanVien extends JFrame{
     serviceNhanVien _list = new serviceNhanVien();
     boolean check = false;
 
-    public  formNhanVien() throws SQLException, IOException {
+    public formNhanVien() throws SQLException, IOException {
 
         this.setTitle("Quản lí nhân viên");
         this.setContentPane(mainPanel);
-        this.setSize(700,500);
+        this.setSize(700, 500);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(2);
         this.setResizable(false); // chống chỉnh sửa size frame
         this.setVisible(true);
         _dtm = (DefaultTableModel) tblNhanVien.getModel();
-        _dtm.setColumnIdentifiers(new String []{
+        _dtm.setColumnIdentifiers(new String[]{
                 "Mã Nhân Viên", "Họ Tên", "Địa Chỉ", "Số Điện Thoại", "Email", "Mật Khẩu", "Chức Vụ"
         });
         tblNhanVien.setModel(_dtm);
@@ -106,7 +107,7 @@ public class formNhanVien extends JFrame{
                     return;
                 }
 
-                if(check){
+                if (check) {
                     try {
                         JOptionPane.showMessageDialog(null, _list.themLai(txtMaNV.getText()));
                         loadtblXoa();
@@ -120,11 +121,11 @@ public class formNhanVien extends JFrame{
                     }
                     return;
                 }
-                if(loi()){
+                if (loi()) {
                     try {
                         JOptionPane.showMessageDialog(null, _list.addNV(nv()));
                         _dtm.addRow(new Object[]{
-                                nv().getManv(), nv().getHoten(), nv().getDaichi(), nv().getSdt(), nv().getEmail(), nv().getMatkhau() ,nv().getRole() == 1 ? "Trưởng Phòng" : "Nhân Viên"});
+                                nv().getManv(), nv().getHoten(), nv().getDaichi(), nv().getSdt(), nv().getEmail(), nv().getMatkhau(), nv().getRole() == 1 ? "Trưởng Phòng" : "Nhân Viên"});
                         xoaForm();
                     } catch (SQLException ex) {
                         try {
@@ -180,7 +181,7 @@ public class formNhanVien extends JFrame{
         btnSua.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(loi()){
+                if (loi()) {
                     try {
                         JOptionPane.showMessageDialog(null, _list.updateNV(nv()));
                         xoaForm();
@@ -221,7 +222,7 @@ public class formNhanVien extends JFrame{
         btnTBLXoa.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!check){
+                if (!check) {
                     try {
                         loadtblXoa();
                     } catch (SQLException ex) {
@@ -245,7 +246,7 @@ public class formNhanVien extends JFrame{
                 }
 
 
-                if(check){
+                if (check) {
                     try {
                         loadtbl();
                     } catch (SQLException ex) {
@@ -268,7 +269,6 @@ public class formNhanVien extends JFrame{
                 }
             }
         });
-
 
 
         // nút tìm kiếm
@@ -311,7 +311,7 @@ public class formNhanVien extends JFrame{
         for (NhanVien nv : _list.getlist()
         ) {
             _dtm.addRow(new Object[]{
-                  nv.getManv(), nv.getHoten(), nv.getDaichi(), nv.getSdt(), nv.getEmail(), nv.getMatkhau() ,nv.getRole() == 1 ? "Chủ" : "Nhân Viên"});
+                    nv.getManv(), nv.getHoten(), nv.getDaichi(), nv.getSdt(), nv.getEmail(), nv.getMatkhau(), nv.getRole() == 1 ? "Chủ" : "Nhân Viên"});
         }
     }
 
@@ -325,13 +325,13 @@ public class formNhanVien extends JFrame{
         for (NhanVien nv : _list.getlistXoa()
         ) {
             _dtm.addRow(new Object[]{
-                    nv.getManv(), nv.getHoten(), nv.getDaichi(), nv.getSdt(), nv.getEmail(), nv.getMatkhau() ,nv.getRole() == 1 ? "Chủ" : "Nhân Viên"});
+                    nv.getManv(), nv.getHoten(), nv.getDaichi(), nv.getSdt(), nv.getEmail(), nv.getMatkhau(), nv.getRole() == 1 ? "Chủ" : "Nhân Viên"});
         }
     }
 
     //Phương thức đọc form lấy ra nhân viên
     private NhanVien nv() {
-        return new NhanVien(txtMaNV.getText(),  txtHoTen.getText(), txtDiaChi.getText(), txtSDT.getText(), txtEmail.getText() ,String.valueOf(txtMk.getPassword()), (rdbChu.isSelected() ? 1 : 0));
+        return new NhanVien(txtMaNV.getText(), txtHoTen.getText(), txtDiaChi.getText(), txtSDT.getText(), txtEmail.getText(), String.valueOf(txtMk.getPassword()), (rdbChu.isSelected() ? 1 : 0));
     }
 
     // Xóa Form
@@ -346,11 +346,8 @@ public class formNhanVien extends JFrame{
     }
 
 
-
-
-
     // Phương thức check lỗi trên form
-    private boolean loi(){
+    private boolean loi() {
 //        if(txtMaNV.getText().isEmpty() || txtMaNV.getText().isBlank()){
 //            JOptionPane.showMessageDialog(null, "Mã nhân viên không được để trống", "lỗi", 2);
 //            return false;
@@ -416,16 +413,18 @@ public class formNhanVien extends JFrame{
 //            JOptionPane.showMessageDialog(null, "mật khẩu nhân viên vui lòng là chữ la tinh hoặc số", "Lỗi", JOptionPane.WARNING_MESSAGE);
 //            return false;
 //        }
-        return  true;
+        return true;
     }
 
     // Phương thức set giá trị cho 2 biến phân quyền
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
+
     private void baoLoi(Exception ex) throws IOException {
         Log log = new Log("hieupro.txt");
         log.logger.setLevel(Level.WARNING);
@@ -447,8 +446,8 @@ public class formNhanVien extends JFrame{
     }
 
 
-
     public static void main(String[] args) throws SQLException, IOException {
         new formNhanVien();
     }
+
 }

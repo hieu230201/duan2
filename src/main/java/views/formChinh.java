@@ -3,6 +3,7 @@ package views;
 import dao.Log;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -15,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 
-public class formChinh extends JFrame{
+public class formChinh extends JFrame {
     private String user;
     private int role;
     private JPanel mainForm;
@@ -290,8 +291,6 @@ public class formChinh extends JFrame{
     }
 
 
-
-
     // báo lỗi trên form
     private void baoLoi(Exception ex) throws IOException {
         Log log = new Log("hieupro.txt");
@@ -310,6 +309,7 @@ public class formChinh extends JFrame{
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
@@ -353,4 +353,5 @@ public class formChinh extends JFrame{
     public static void main(String[] args) throws IOException {
         new formChinh();
     }
+
 }

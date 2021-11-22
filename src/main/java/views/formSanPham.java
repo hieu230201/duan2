@@ -13,6 +13,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class formSanPham extends JFrame{
+public class formSanPham extends JFrame {
     private String user;
     private int role;
     private JPanel mainPanel;
@@ -39,16 +40,16 @@ public class formSanPham extends JFrame{
     serviceLoaiSP _list = new serviceLoaiSP();
     serviceSanPham _lstSP = new serviceSanPham();
 
-    public  formSanPham() throws IOException, SQLException {
+    public formSanPham() throws IOException, SQLException {
         this.setTitle("Quản lí sản phẩm");
         this.setContentPane(mainPanel);
-        this.setSize(600,450);
+        this.setSize(600, 450);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(2);
         this.setResizable(false); // chống chỉnh sửa size frame
         this.setVisible(true);
         _dtm = (DefaultTableModel) tblSanPham.getModel();
-        _dtm.setColumnIdentifiers(new String []{
+        _dtm.setColumnIdentifiers(new String[]{
                 "ID Sản Phẩm", "Tên Sản Phẩm", "Loại Sản Phẩm", "Mô Tả"
         });
         tblSanPham.setModel(_dtm);
@@ -131,19 +132,19 @@ public class formSanPham extends JFrame{
         btnThemSP.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    if(loi()){
+                if (loi()) {
+                    try {
+                        JOptionPane.showMessageDialog(null, _lstSP.themSP(sanPham()));
+                        loadTBL();
+                        xoaForm();
+                    } catch (SQLException ex) {
                         try {
-                            JOptionPane.showMessageDialog(null, _lstSP.themSP(sanPham()));
-                            loadTBL();
-                            xoaForm();
-                        } catch (SQLException ex) {
-                            try {
-                                baoLoi(ex);
-                            } catch (IOException exc) {
-                                exc.printStackTrace();
-                            }
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
                         }
                     }
+                }
             }
         });
 
@@ -179,7 +180,7 @@ public class formSanPham extends JFrame{
         btnNew.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    xoaForm();
+                xoaForm();
             }
         });
 
@@ -187,7 +188,7 @@ public class formSanPham extends JFrame{
         btnSuaSP.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(loi()){
+                if (loi()) {
                     int i = tblSanPham.getSelectedRow();
                     try {
                         JOptionPane.showMessageDialog(null, _lstSP.suaSP(sanPham(), _lstSP.get1Loai(String.valueOf(tblSanPham.getValueAt(i, 1)))));
@@ -211,7 +212,7 @@ public class formSanPham extends JFrame{
                 int i = tblSanPham.getSelectedRow();
                 txtTenSP.setText(String.valueOf(tblSanPham.getValueAt(i, 1)));
                 txtMoTa.setText(String.valueOf(tblSanPham.getValueAt(i, 3)));
-                cbcLoaiSP.setSelectedItem(String.valueOf(tblSanPham.getValueAt(i,2)));
+                cbcLoaiSP.setSelectedItem(String.valueOf(tblSanPham.getValueAt(i, 2)));
             }
         });
     }
@@ -219,7 +220,7 @@ public class formSanPham extends JFrame{
     // load loại sản phẩm cbc
     private void loadCBC() throws SQLException {
         cbcLoaiSP.removeAllItems();
-        for (LoaiSP a: _list.get_list()
+        for (LoaiSP a : _list.get_list()
         ) {
             cbcLoaiSP.addItem(a.getTen());
         }
@@ -229,27 +230,27 @@ public class formSanPham extends JFrame{
     // laod sản phẩm lên table
     private void loadTBL() throws SQLException {
         _dtm = (DefaultTableModel) tblSanPham.getModel();
-        if(_dtm.getRowCount() > 0){
+        if (_dtm.getRowCount() > 0) {
             _dtm.setRowCount(0);
         }
         int stt = 1;
-        for (SanPham a: _lstSP.get_list()
-             ) {
+        for (SanPham a : _lstSP.get_list()
+        ) {
             _dtm.addRow(new Object[]{
-               stt ,   a.getName(), a.getTen(), a.getMoTa()
+                    stt, a.getName(), a.getTen(), a.getMoTa()
             });
             stt++;
         }
     }
 
     // phương thức xóa form
-    private void xoaForm(){
+    private void xoaForm() {
         txtTenSP.setText("");
         txtMoTa.setText("");
     }
 
     // phương thức khởi tạo 1 sản phẩm
-    private SanPham sanPham(){
+    private SanPham sanPham() {
         SanPham sanPham = new SanPham();
         sanPham.setName(txtTenSP.getText());
         sanPham.setMoTa(txtMoTa.getText());
@@ -265,8 +266,8 @@ public class formSanPham extends JFrame{
 
 
     // phương thức check lỗi ở form
-    private boolean loi(){
-        if(txtTenSP.getText().isEmpty() || txtTenSP.getText().isBlank()){
+    private boolean loi() {
+        if (txtTenSP.getText().isEmpty() || txtTenSP.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "tên không được để trốn");
             return false;
         }
@@ -278,6 +279,7 @@ public class formSanPham extends JFrame{
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
@@ -306,4 +308,5 @@ public class formSanPham extends JFrame{
     public static void main(String[] args) throws IOException, SQLException {
         new formSanPham();
     }
+
 }

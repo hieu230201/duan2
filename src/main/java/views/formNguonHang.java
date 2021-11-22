@@ -11,6 +11,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,7 +19,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class formNguonHang extends JFrame{
+public class formNguonHang extends JFrame {
     private String user;
     private int role;
     private JPanel mainPanel;
@@ -36,18 +37,19 @@ public class formNguonHang extends JFrame{
     DefaultTableModel _dtm;
     serviceNguonHang _list = new serviceNguonHang();
     boolean check = false;
+
     public formNguonHang() throws SQLException, IOException {
 
         this.setTitle("Nguồn Hàng");
         this.setContentPane(mainPanel);
-        this.setSize(500,300);
+        this.setSize(500, 300);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(2);
         this.setResizable(false); // chống chỉnh sửa size frame
         this.setVisible(true);
         _dtm = (DefaultTableModel) tblNguonHang.getModel();
-        _dtm.setColumnIdentifiers(new String []{
-                 "Tên Nguồn Hàng", "Địa Chỉ", "Số Điện Thoại"
+        _dtm.setColumnIdentifiers(new String[]{
+                "Tên Nguồn Hàng", "Địa Chỉ", "Số Điện Thoại"
         });
         tblNguonHang.setModel(_dtm);
         loadtbl();
@@ -120,8 +122,8 @@ public class formNguonHang extends JFrame{
         btnThem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(check){
-                    int i  = tblNguonHang.getSelectedRow();
+                if (check) {
+                    int i = tblNguonHang.getSelectedRow();
                     try {
                         NguonHang nguonHang = _list.getlistXoa().get(i);
                         JOptionPane.showMessageDialog(null, _list.themLai(nguonHang.getId()));
@@ -137,7 +139,7 @@ public class formNguonHang extends JFrame{
                     return;
 
                 }
-                if(loi()){
+                if (loi()) {
                     try {
                         JOptionPane.showMessageDialog(null, _list.themNguonHang(nguonHang()));
                         loadtbl();
@@ -180,9 +182,9 @@ public class formNguonHang extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 int i = tblNguonHang.getSelectedRow();
                 System.out.println(i);
-                txtHoTen.setText(String.valueOf(tblNguonHang.getValueAt(i,0)));
-                txtDiaChi.setText(String.valueOf(tblNguonHang.getValueAt(i,1)));
-                txtSDT.setText(String.valueOf(tblNguonHang.getValueAt(i,2)));
+                txtHoTen.setText(String.valueOf(tblNguonHang.getValueAt(i, 0)));
+                txtDiaChi.setText(String.valueOf(tblNguonHang.getValueAt(i, 1)));
+                txtSDT.setText(String.valueOf(tblNguonHang.getValueAt(i, 2)));
             }
         });
 
@@ -199,7 +201,7 @@ public class formNguonHang extends JFrame{
                 int i = tblNguonHang.getSelectedRow();
                 try {
                     NguonHang nguonHang = _list.getlist().get(i);
-                    JOptionPane.showMessageDialog(null, _list.updateNH(nguonHang(),nguonHang.getId()));
+                    JOptionPane.showMessageDialog(null, _list.updateNH(nguonHang(), nguonHang.getId()));
                     loadtbl();
                     xoaForm();
                 } catch (SQLException ex) {
@@ -216,7 +218,7 @@ public class formNguonHang extends JFrame{
         btnTblXoa.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!check){
+                if (!check) {
                     try {
                         loadtblXoa();
                     } catch (SQLException ex) {
@@ -238,7 +240,7 @@ public class formNguonHang extends JFrame{
                     return;
                 }
 
-                if(check){
+                if (check) {
                     try {
                         loadtbl();
                     } catch (SQLException ex) {
@@ -262,13 +264,13 @@ public class formNguonHang extends JFrame{
     }
 
     // khởi tạo 1 giá trị nguồn hàng
-    private NguonHang nguonHang(){
-        return new NguonHang(1,txtHoTen.getText(), txtDiaChi.getText(), txtSDT.getText());
+    private NguonHang nguonHang() {
+        return new NguonHang(1, txtHoTen.getText(), txtDiaChi.getText(), txtSDT.getText());
     }
 
 
     // xóa form
-    private void xoaForm(){
+    private void xoaForm() {
         txtHoTen.setText("");
         txtDiaChi.setText("");
         txtSDT.setText("");
@@ -283,7 +285,7 @@ public class formNguonHang extends JFrame{
         for (NguonHang nv : _list.getlist()
         ) {
             _dtm.addRow(new Object[]{
-                   nv.getTenNguonHang(), nv.getDiaChi(), nv.getSdt()});
+                    nv.getTenNguonHang(), nv.getDiaChi(), nv.getSdt()});
         }
     }
 
@@ -318,6 +320,7 @@ public class formNguonHang extends JFrame{
     public void setUser(String user) {
         this.user = user;
     }
+
     public void setRole(int role) {
         this.role = role;
     }
@@ -331,7 +334,7 @@ public class formNguonHang extends JFrame{
 
     // phương thức check lỗi
 
-    private boolean loi(){
+    private boolean loi() {
 //        if (txtHoTen.getText().isEmpty() || txtHoTen.getText().isBlank()) {
 //            JOptionPane.showMessageDialog(null, "Tên không được để trống", "Cảnh Báo", 2);
 //            txtHoTen.requestFocus();
@@ -367,10 +370,11 @@ public class formNguonHang extends JFrame{
 //        }
 
 
-        return  true;
+        return true;
     }
 
     public static void main(String[] args) throws SQLException, IOException {
         new formNguonHang();
     }
+
 }

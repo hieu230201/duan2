@@ -4,9 +4,10 @@ import dao.Log;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.io.IOException;
 
-public class formThongKe extends JFrame{
+public class formThongKe extends JFrame {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
     private JComboBox comboBox1;
@@ -31,10 +32,10 @@ public class formThongKe extends JFrame{
         this.setDefaultCloseOperation(2);
         _dtm = (DefaultTableModel) tblDoanhThu.getModel();
         _dtmDoanhSO = (DefaultTableModel) tblDoanhSo.getModel();
-        _dtm.setColumnIdentifiers(new String []{
+        _dtm.setColumnIdentifiers(new String[]{
                 "Tháng", "Sản phẩm bán", "Tổng giá bán", "Tổng giá vốn", "Doanh thu"
         });
-        _dtmDoanhSO.setColumnIdentifiers(new String []{
+        _dtmDoanhSO.setColumnIdentifiers(new String[]{
                 "Mã sản phẩm", "Tên sản phẩm", "Số lượng bán"
         });
     }
@@ -42,4 +43,5 @@ public class formThongKe extends JFrame{
     public static void main(String[] args) throws IOException {
         new formThongKe();
     }
+
 }
