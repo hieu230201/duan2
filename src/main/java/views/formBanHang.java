@@ -1,10 +1,8 @@
 package views;
 
 
-import dao.Log;
-import dao.RendererHighlighted;
-import dao.serviceKhachHang;
-import dao.serviceSanPhamChiTiet;
+import dao.*;
+import model.BanHang;
 import model.KhachHang;
 import model.SanPhamChiTiet;
 
@@ -14,16 +12,12 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.logging.Level;
 
 public class formBanHang extends JFrame {
@@ -31,26 +25,28 @@ public class formBanHang extends JFrame {
     private int role;
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
-    private JTextField txtTimKiemHoaDon;
     private JTable tblHoaDon;
     private JTextField txtTimKiemSanPham;
     private JTable tblHangHoa;
-    private JTextField txtSoluong;
-    private JComboBox cbcSdt;
+    private JTextField txtSDT;
     private JTextField txtTenKH;
     private JTable tblChiTiet;
     private JTextField txtTienKhachDua;
-    private JButton btnXacNhan;
-    private JLabel lblThuaTien;
-    private JButton tínhĐượcGiảmButton;
-    private JPanel pnlCBC;
+    private JButton btnGiamGia;
+    private JButton btnXoaSP;
+    private JButton btnThanhToan;
+    private JLabel lblTong;
+    private JLabel lblThua;
+    private JButton btnFind;
+    private JButton btnTinhTien;
     DefaultTableModel _dtm;
     DefaultTableModel _dtmHoaDon;
     DefaultTableModel _dtmBanHang;
     serviceSanPhamChiTiet serviceSanPhamChiTiet = new serviceSanPhamChiTiet();
     serviceKhachHang serviceKhachHang = new serviceKhachHang();
-
-
+    serviceBanhang serviceBanhang = new serviceBanhang();
+    int id = -1;
+    long giaGiam = 0;
     public formBanHang() throws SQLException {
         this.setTitle("Cửa sổ bán hàng");
         this.setContentPane(mainPanel);
@@ -62,16 +58,16 @@ public class formBanHang extends JFrame {
         _dtmHoaDon = (DefaultTableModel) tblHoaDon.getModel();
         _dtmBanHang = (DefaultTableModel) tblChiTiet.getModel();
         _dtm.setColumnIdentifiers(new String[]{
-                "Mã sản phẩm", "Tên sản phẩm", "Loại", "Size", "Màu sắc", "Số lượng", "Giá Bán"
+                "Mã sản phẩm", "Tên sản phẩm", "Loại", "Size", "Màu sắc", "Số lượng còn lại", "Giá Bán"
         });
         _dtmHoaDon.setColumnIdentifiers(new String[]{
-                "Mã hóa đơn", "Tên khách hàng", "Nhân viên", "Ngày", "Tổng tiền"
+                "Mã hóa đơn", "Nhân viên" , "Tên khách hàng", "Ngày", "Tổng tiền", "Tiền Khách Đưa", "Tiền Thừa", "Giảm giá"
         });
         _dtmBanHang.setColumnIdentifiers(new String[]{
-                "Mã sản phẩm", "Tên sản phẩm", "Loại", "Giá giảm", "Size", "Màu sắc", "Số lượng bán", "Đơn giá"
+                "Mã sản phẩm", "Tên sản phẩm", "Loại", "Size", "Màu sắc", "Số lượng bán", "Đơn giá"
         });
 
-        loadCBC();
+        loadtblHoaDon();
         loadTblSP();
         RendererHighlighted renderer = new RendererHighlighted(txtTimKiemSanPham);
         tblHangHoa.setDefaultEditor(Object.class, null);
@@ -80,12 +76,6 @@ public class formBanHang extends JFrame {
         tblHangHoa.setRowSorter(rowSorter);
         tblHangHoa.setDefaultRenderer(Object.class, renderer);
 
-        RendererHighlighted renderer1 = new RendererHighlighted(txtTimKiemHoaDon);
-        tblHoaDon.setDefaultEditor(Object.class, null);
-        TableRowSorter<TableModel> rowSorter1
-                = new TableRowSorter<>(tblHoaDon.getModel());
-        tblHoaDon.setRowSorter(rowSorter1);
-        tblHoaDon.setDefaultRenderer(Object.class, renderer1);
 
         // mở chương trình và lưu giá trị
         addWindowListener(new WindowAdapter() {
@@ -145,33 +135,6 @@ public class formBanHang extends JFrame {
         });
 
 
-        // nút tìm kiếm hóa đơn nhập
-        txtTimKiemHoaDon.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                String text = txtTimKiemHoaDon.getText();
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                String text = txtTimKiemHoaDon.getText();
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-                }
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
 
         // nút click từ tbl này sang tbl khác
         tblHangHoa.addMouseListener(new MouseAdapter() {
@@ -196,24 +159,222 @@ public class formBanHang extends JFrame {
                 System.out.println(_dtmBanHang.getRowCount());
                 if (_dtmBanHang.getRowCount() == 0) {
                     _dtmBanHang.addRow(new Object[]{
-                            String.valueOf(tblHangHoa.getValueAt(i, 0)), String.valueOf(tblHangHoa.getValueAt(i, 1)), String.valueOf(tblHangHoa.getValueAt(i, 2)),
-                            0, String.valueOf(tblHangHoa.getValueAt(i, 3)), String.valueOf(tblHangHoa.getValueAt(i, 4)), input, Integer.parseInt(input) * Double.valueOf(String.valueOf(tblHangHoa.getValueAt(i, 6)))
+                            String.valueOf(tblHangHoa.getValueAt(i, 0)), String.valueOf(tblHangHoa.getValueAt(i, 1)), String.valueOf(tblHangHoa.getValueAt(i, 2))
+                            , String.valueOf(tblHangHoa.getValueAt(i, 3)), String.valueOf(tblHangHoa.getValueAt(i, 4)), input, (long)Integer.parseInt(input) * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(i, 6)))
                     });
+                    int a = (int) (Integer.parseInt(input) * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(i, 6))));
+                    lblTong.setText(String.valueOf(a));
+                    return;
+                }
+                if(_dtmBanHang.getRowCount() > 0){
+                    long tong = 0;
+                    boolean flag = false;
+                    for (int j = 0; j < _dtmBanHang.getRowCount(); j++) {
+                        if(String.valueOf(tblHangHoa.getValueAt(i,0)).equals(String.valueOf(tblChiTiet.getValueAt(j,0)))){
+                            _dtmBanHang.setValueAt(Integer.parseInt(String.valueOf(tblChiTiet.getValueAt(j,5))) + Integer.parseInt(input), j , 5 );
+                            _dtmBanHang.setValueAt((long)Double.parseDouble(String.valueOf(tblChiTiet.getValueAt(j,5))) * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(i,6))), j, 6);
+                            flag = true;
+                        }
+                        double a = Double.parseDouble(String.valueOf(tblChiTiet.getValueAt(j,6)));
+                        tong += a;
+                    }
+                    if(!flag){
+                        _dtmBanHang.addRow(new Object[]{
+                                String.valueOf(tblHangHoa.getValueAt(i, 0)), String.valueOf(tblHangHoa.getValueAt(i, 1)), String.valueOf(tblHangHoa.getValueAt(i, 2))
+                                , String.valueOf(tblHangHoa.getValueAt(i, 3)), String.valueOf(tblHangHoa.getValueAt(i, 4)), input, Integer.parseInt(input) * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(i, 6)))
+                        });
+                        double a = Integer.parseInt(input) * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(i, 6)));
+                        tong += a;
+                    }
+                    lblTong.setText(String.valueOf(tong));
+
+
                 }
 
 
             }
         });
+
+        // tìm khách hàng theo sđt
+        btnFind.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    if(txtSDT.getText().isBlank() || txtSDT.getText().isEmpty()){
+                        JOptionPane.showMessageDialog(null, "Vui lòng nhập số điện thoại để tìm");
+                    }else {
+                        try {
+                            if(serviceKhachHang.timTen(txtSDT.getText()) == null){
+                                JOptionPane.showMessageDialog(null, "Khách hàng này chưa mua bao giờ");
+                                int i = JOptionPane.showConfirmDialog(null, "Bạn muốn thêm khách hàng này không?");
+                                if(i == JOptionPane.YES_OPTION){
+                                   String input = JOptionPane.showInputDialog(null, "Vui lòng nhập tên khách hàng");
+                                   JOptionPane.showMessageDialog(null, serviceKhachHang.themKhachHang(new KhachHang(input, txtSDT.getText(), 0)));
+                                   txtTenKH.setText(input);
+
+
+                                }
+                            }else {
+                                txtTenKH.setText(serviceKhachHang.timTen(txtSDT.getText()).getTen());
+
+
+                            }
+
+                        } catch (SQLException ex) {
+                            try {
+                                baoLoi(ex);
+                            } catch (IOException exc) {
+                                exc.printStackTrace();
+                            }
+                        }
+                    }
+            }
+        });
+
+        // tính % đc giảm
+        btnGiamGia.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(txtSDT.getText().isEmpty() || txtSDT.getText().isBlank()){
+                    JOptionPane.showMessageDialog(null, "Vui lòng nhập sđt để tính tiền giảm");
+                    return;
+                }
+                if(txtTenKH.getText().isEmpty() || txtTenKH.getText().isBlank()){
+                    JOptionPane.showMessageDialog(null, "chưa có tên khách hàng");
+                    return;
+                }
+                try {
+                    if(serviceKhachHang.timTen(txtSDT.getText()).getDiem() <= 5){
+                        JOptionPane.showMessageDialog(null, "Khách này không được giảm giá");
+
+                    }else if (serviceKhachHang.timTen(txtSDT.getText()).getDiem() <= 10){
+                        JOptionPane.showMessageDialog(null, "Khách này được giảm 5% tổng đơn hàng");
+                        long tong = Long.parseLong(lblTong.getText());
+                        tong = tong - (tong / 100 * 5);
+                        giaGiam = tong / 100 * 5;
+                        lblTong.setText(String.valueOf(tong));
+                    }else {
+                        JOptionPane.showMessageDialog(null, "Khách này được giảm 10% tổng đơn hàng");
+                        long tong = Long.parseLong(lblTong.getText());
+                        tong = tong - (tong / 100 * 10);
+                        giaGiam = tong / 100 * 5;
+                        lblTong.setText(String.valueOf(tong));
+                    }
+                } catch (SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+
+
+            }
+        });
+
+
+        // tính tiền cho khách
+        btnTinhTien.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(txtTienKhachDua.getText().isBlank() || txtTienKhachDua.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "nhập tiền khách đưa để tính");
+                    return;
+                }
+                if(!txtTienKhachDua.getText().matches("[0-9]{1,}")){
+                    JOptionPane.showMessageDialog(null, "tiền vui lòng nhập số");
+                    return;
+                }
+                long tong =  (Long.parseLong(txtTienKhachDua.getText()) - Integer.parseInt(lblTong.getText()));
+                lblThua.setText(String.valueOf(tong));
+            }
+        });
+
+         // xóa sản phẩm nếu khách ko chọn nữa
+        btnXoaSP.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row[] = tblChiTiet.getSelectedRows();
+                for (int i = row.length - 1; i >= 0; i--) {
+                    _dtmBanHang.removeRow(row[i]);
+                }
+                if (_dtmBanHang.getRowCount() > 0) {
+                    long tong = 0;
+                    for (int j = 0; j < _dtmBanHang.getRowCount(); j++) {
+                        tong += Double.parseDouble(String.valueOf(_dtmBanHang.getValueAt(j, 6)));
+                    }
+                    lblTong.setText(String.valueOf(tong));
+                }
+                if(_dtmBanHang.getRowCount() == 0){
+                    lblTong.setText("0");
+                }
+            }
+        });
+
+        // in hóa đơn bán hàng
+        btnThanhToan.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(txtTenKH.getText().isBlank() || txtTenKH.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Chưa có tên khách hàng để in đơn");
+                    return;
+                }
+                if(txtSDT.getText().isBlank() || txtSDT.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Chưa có sđt khách hàng để in đơn");
+                    return;
+                }
+                if(txtTienKhachDua.getText().isBlank() || txtTienKhachDua.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "vui lòng nhập tiền khách đưa để in đơn");
+                    return;
+                }
+                if(_dtmBanHang.getRowCount() == 0){
+                    JOptionPane.showMessageDialog(null, "Chưa có sản phẩm để tạo đơn");
+                    return;
+                }
+                try {
+                    serviceBanhang.inHoaDon(user, serviceKhachHang.timTen(txtSDT.getText()).getId(), String.valueOf(LocalDate.now()), Integer.parseInt(lblTong.getText()), Integer.parseInt(txtTienKhachDua.getText()), Integer.parseInt(lblThua.getText()), (int) giaGiam);
+                    int id = serviceBanhang.timHoaDon(user, serviceKhachHang.timTen(txtSDT.getText()).getId(), String.valueOf(LocalDate.now()), Integer.parseInt(lblTong.getText()), Integer.parseInt(txtTienKhachDua.getText()), Integer.parseInt(lblThua.getText()), (int) giaGiam);
+                    for (int i = 0; i < _dtmBanHang.getRowCount(); i++) {
+                        double a = Double.parseDouble(String.valueOf(tblChiTiet.getValueAt(i,6)));
+                        serviceBanhang.taoChiTietDonHang(id, Integer.parseInt((String) tblChiTiet.getValueAt(i,0)),Integer.parseInt((String) tblChiTiet.getValueAt(i,5)), (int) a);
+                        for (int j = 0; j < _dtm.getRowCount(); j++) {
+                            if(Integer.parseInt(String.valueOf(tblChiTiet.getValueAt(i, 0))) == Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,0)))){
+                                int soLuong = Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,5))) - Integer.parseInt(String.valueOf(tblChiTiet.getValueAt(i,5)));
+                                serviceSanPhamChiTiet.updateSoLuong(soLuong,Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,0))));
+                                _dtm.setValueAt(soLuong,j,5);
+                                break;
+                            }
+                        }
+                    }
+                    JOptionPane.showMessageDialog(null, "Đã tạo hóa đơn cho khách");
+                    int diem = serviceKhachHang.timTen(txtSDT.getText()).getDiem() + 1;
+                    serviceKhachHang.suaDiem(serviceKhachHang.timTen(txtSDT.getText()).getId(), diem);
+                    loadtblHoaDon();
+                    _dtmBanHang.setRowCount(0);
+                } catch (SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
-    // đổ dữ liệu vào cbc
-    private void loadCBC() throws SQLException {
-        cbcSdt.removeAllItems();
-        for (KhachHang a : serviceKhachHang.getlist()
-        ) {
-            cbcSdt.addItem(a.getSdt());
+
+    // đổ dữ liệu vào tbl hóa đơn
+    private void loadtblHoaDon() throws SQLException {
+        _dtmHoaDon = (DefaultTableModel) tblHoaDon.getModel();
+        if(_dtmHoaDon.getRowCount() > 0){
+            _dtmHoaDon.setRowCount(0);
+        }
+        for (BanHang a : serviceBanhang.get_lst()) {
+            _dtmHoaDon.addRow(new Object[]{
+                    a.getIdHoaDon(), a.getManv(), serviceKhachHang.timTenTheoID(a.getIdKH()), a.getNgayBan(), a.getGiaTriDon(), a.getTienKhachDua(), a.getTienThua(), a.getGiamGia()
+            });
         }
     }
+  
 
 
     // đổ dữ liệu vào tbl nhập hàng
@@ -259,7 +420,7 @@ public class formBanHang extends JFrame {
 
     // đọc dữ liệu phân quyền lên form
     private void luuText() {
-        System.out.println(user + " bên form hàng hóa");
+        System.out.println(user + " bên form bán hàng");
     }
 
     public static void main(String[] args) throws SQLException {

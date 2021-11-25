@@ -39,7 +39,7 @@ public class formNguonHang extends JFrame {
     boolean check = false;
 
     public formNguonHang() throws SQLException, IOException {
-
+        tabbedPane1.setSelectedIndex(1);
         this.setTitle("Nguồn Hàng");
         this.setContentPane(mainPanel);
         this.setSize(500, 300);

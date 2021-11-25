@@ -22,6 +22,19 @@ public class SanPhamChiTiet extends SanPham {
         this.hinh = hinh;
     }
 
+    public SanPhamChiTiet(int idSP, String name, int idChiTiet, String color, String size, int soLuong, double giaBan, double giaVon, String ngayNhap, int trangThai, String hinh) {
+        super(idSP, name);
+        this.idChiTiet = idChiTiet;
+        this.color = color;
+        this.size = size;
+        this.soLuong = soLuong;
+        this.giaBan = giaBan;
+        this.giaVon = giaVon;
+        this.ngayNhap = ngayNhap;
+        this.trangThai = trangThai;
+        this.hinh = hinh;
+    }
+
     public SanPhamChiTiet() {
     }
 

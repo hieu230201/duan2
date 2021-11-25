@@ -39,7 +39,7 @@ public class loginFormm extends JFrame {
         this.setVisible(true);
         this.setDefaultCloseOperation(2);
 
-
+        ckcRemember.setSelected(true);
         if (loginService.acconutDaLuu()[0] == null) {
             txtTaiKhoan.setText("");
             txtPass.setText("");

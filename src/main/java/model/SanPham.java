@@ -11,6 +11,11 @@ public class SanPham extends LoaiSP{
         this.moTa = moTa;
     }
 
+    public SanPham(int idSP, String name) {
+        this.idSP = idSP;
+        this.name = name;
+    }
+
     public SanPham() {
     }
 

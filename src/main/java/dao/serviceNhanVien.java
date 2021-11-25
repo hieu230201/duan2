@@ -84,10 +84,31 @@ public class serviceNhanVien {
         return "Thêm lại thất bại";
     }
 
+    // xóa nhân viên vĩnh viễn
+    public boolean boNhanVien(String ma) throws SQLException{
+        String sql = "select * from hoaDonNhapHang where manv = ?";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        pm.setString(1, ma);
+        ResultSet rs = pm.executeQuery();
+        if(rs.next()){
+            return false;
+        }
+        String sql1 = "select * from hoaDonBanHang where manv = ?";
+        PreparedStatement pm1 = con.con().prepareStatement(sql1);
+        pm1.setString(1, ma);
+        ResultSet rs1 = pm.executeQuery();
+        if(rs1.next()){
+            return false;
+        }
+        String sql2 = "delete from nhanvien where manv = ?";
+        PreparedStatement pm2 = con.con().prepareStatement(sql2);
+        pm2.setString(1, ma);
+        pm2.executeUpdate();
+        return true;
+    }
 
 
-
-    //Xóa nhân viên
+    //Xóa nhân viên vào thùng rác
     public String deleteNV(String ma) throws SQLException {
         String sql = "update nhanvien set  isActive = 0 WHERE manv = ?";
         PreparedStatement pm = con.con().prepareStatement(sql);

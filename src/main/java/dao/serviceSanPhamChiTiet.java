@@ -20,13 +20,26 @@ public class serviceSanPhamChiTiet {
     }
 
     // lấy hết dữ liệu từ db đổ vào list
-    public List<SanPhamChiTiet> get_list() throws SQLException {
+    public List<SanPhamChiTiet> get_list() throws SQLException  {
         String sql = "select * from chiTietSP join SanPham SP on SP.id = chiTietSP.id_sp join loaiSanPham lSP on lSP.id = SP.id_loaisp";
         PreparedStatement pm = con.con().prepareStatement(sql);
         ResultSet rs = pm.executeQuery();
         _list.clear();
         while (rs.next()) {
             _list.add(new SanPhamChiTiet(rs.getInt(15), rs.getString(16), rs.getInt(2),rs.getString(13), rs.getString(14), rs.getInt(1),rs.getString(3), rs.getString(4), rs.getInt(5),rs.getDouble(6), rs.getDouble(7), rs.getString(8), rs.getInt(9), rs.getString(10)));
+        }
+        return _list;
+    }
+
+    // lấy list chia trang
+    public List<SanPhamChiTiet> getList(int trang) throws SQLException{
+        _list.clear();
+        String sql = "select top 10 * from chiTietSP join SanPham SP on SP.id = chiTietSP.id_sp where chiTietSP.id not in (select top " + (trang*10-10) +" chiTietSP.id from chiTietSP join SanPham SP on SP.id = chiTietSP.id_sp)";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        ResultSet rs = pm.executeQuery();
+        while (rs.next()) {
+            _list.add(new SanPhamChiTiet(rs.getInt(2),rs.getString(13),rs.getInt(1), rs.getString(3),
+                    rs.getString(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getString(8),rs.getInt(9),rs.getString(10)));
         }
         return _list;
     }
@@ -78,12 +91,35 @@ public class serviceSanPhamChiTiet {
     }
 
 
+    //đếm số người học
+    public int count() throws SQLException{
+        int dem = 0;
+        String sql = "select count(*) from chiTietSP";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        ResultSet rs = pm.executeQuery();
+        while (rs.next()){
+            dem = rs.getInt(1);
+        }
+        return dem;
+    }
+
+
     // update lại ngày nhập khi đã nhập đơn hàng
     public void updateDay(int id) throws SQLException{
         String sql = "update chiTietSP set ngaynhap = ? where id = ? ";
         PreparedStatement pm = con.con().prepareStatement(sql);
         pm.setDate(1, Date.valueOf(String.valueOf(java.time.LocalDate.now())));
         pm.setInt(2, id);
+        pm.executeUpdate();
+    }
+
+
+    // update lại số lượng khi nhập hàng
+    public void updateSoLuong(int soLuong, int id )throws SQLException{
+        String sql = "update chiTietSP set soluong = ? where id = ?";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        pm.setInt(1, soLuong);
+        pm.setInt(2,id);
         pm.executeUpdate();
     }
 

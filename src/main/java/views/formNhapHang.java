@@ -38,7 +38,6 @@ public class formNhapHang extends JFrame {
     private JTextField txtGiaNhap;
     private JComboBox cbcNguonhang;
     private JButton btnXacNhan;
-    private JTextField txtTimKiemHoaDon;
     private JTable tblHoaDonNhap;
     private JLabel lblTongTien;
     private JTable tblLuuTru;
@@ -65,7 +64,7 @@ public class formNhapHang extends JFrame {
         _dtmHoaDon = (DefaultTableModel) tblHoaDonNhap.getModel();
         _dtmLuuTru = (DefaultTableModel) tblLuuTru.getModel();
         _dtm.setColumnIdentifiers(new String[]{
-                "Mã sản phẩm", "Tên sản phẩm", "Loại", "Size", "Màu sắc", "Số lượng", "Giá nhập"
+                "Mã sản phẩm", "Tên sản phẩm", "Loại", "Size", "Màu sắc", "Số lượng trong kho", "Giá nhập"
         });
         _dtmHoaDon.setColumnIdentifiers(new String[]{
                 "Mã hóa đơn", "Người nhập", "Nguồn hàng", "Ngày", "Tổng tiền"
@@ -85,12 +84,6 @@ public class formNhapHang extends JFrame {
         tblHangHoa.setRowSorter(rowSorter);
         tblHangHoa.setDefaultRenderer(Object.class, renderer);
 
-        RendererHighlighted renderer1 = new RendererHighlighted(txtTimKiemHoaDon);
-        tblHoaDonNhap.setDefaultEditor(Object.class, null);
-        TableRowSorter<TableModel> rowSorter1
-                = new TableRowSorter<>(tblHoaDonNhap.getModel());
-        tblHoaDonNhap.setRowSorter(rowSorter1);
-        tblHoaDonNhap.setDefaultRenderer(Object.class, renderer1);
 
 
         // mở chương trình và lưu giá trị
@@ -152,34 +145,6 @@ public class formNhapHang extends JFrame {
         });
 
 
-        // nút tìm kiếm hóa đơn nhập
-        txtTimKiemHoaDon.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                String text = txtTimKiemHoaDon.getText();
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                String text = txtTimKiemHoaDon.getText();
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-                }
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
-
 
         // click tbl đẩy lên form
         tblHangHoa.addMouseListener(new MouseAdapter() {
@@ -216,7 +181,7 @@ public class formNhapHang extends JFrame {
                             if (!cbcNguonhang.getSelectedItem().toString().equals(String.valueOf(tblLuuTru.getValueAt(j, 2)))) {
                                 dem++;
                                 JOptionPane.showMessageDialog(null, "Đơn hàng phải tạo ở cùng một nguồn hàng");
-                                break;
+                                return;
                             }
                         }
                         if (dem == 0) {
@@ -254,6 +219,7 @@ public class formNhapHang extends JFrame {
                     if (_dtmLuuTru.getRowCount() > 0) {
                         if (!cbcNguonhang.getSelectedItem().toString().equals(tblLuuTru.getValueAt(0, 2))) {
                             JOptionPane.showMessageDialog(null, "phải chung một nguồn hàng ở 1 đơn");
+                            return;
                         }
                         ArrayList<Integer> arr = new ArrayList<>();
                         for (int i = 0; i < row.length; i++) {
@@ -272,20 +238,22 @@ public class formNhapHang extends JFrame {
                             }
                         }
                         for (int i = 0; i < arr.size(); i++) {
+                            double a = (double) tblHangHoa.getValueAt(arr.get(i), 6) * Integer.parseInt(String.valueOf(cbcSoLuong.getSelectedItem().toString()));
                             _dtmLuuTru.addRow(new Object[]{
                                     String.valueOf(tblHangHoa.getValueAt(arr.get(i), 0)), String.valueOf(tblHangHoa.getValueAt(arr.get(i), 1)), cbcNguonhang.getSelectedItem().toString(),
                                     String.valueOf(tblHangHoa.getValueAt(arr.get(i), 2)), String.valueOf(tblHangHoa.getValueAt(arr.get(i), 3)),
-                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i), 4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
+                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i), 4)), cbcSoLuong.getSelectedItem().toString(), (int) a
                             });
                         }
 
                     } else {
                         for (int rows : row
                         ) {
+                            double a = (double) tblHangHoa.getValueAt(rows, 6) * Integer.parseInt(String.valueOf(cbcSoLuong.getSelectedItem().toString()));
                             _dtmLuuTru.addRow(new Object[]{
                                     String.valueOf(tblHangHoa.getValueAt(rows, 0)), String.valueOf(tblHangHoa.getValueAt(rows, 1)), cbcNguonhang.getSelectedItem().toString(),
                                     String.valueOf(tblHangHoa.getValueAt(rows, 2)), String.valueOf(tblHangHoa.getValueAt(rows, 3)),
-                                    String.valueOf(tblHangHoa.getValueAt(rows, 4)), cbcSoLuong.getSelectedItem().toString(), lblTienLe.getText()
+                                    String.valueOf(tblHangHoa.getValueAt(rows, 4)), cbcSoLuong.getSelectedItem().toString(), (int) a
                             });
                         }
                     }
@@ -306,20 +274,36 @@ public class formNhapHang extends JFrame {
         btnTaoDon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                if(_dtmLuuTru.getRowCount() == 0){
+                    JOptionPane.showMessageDialog(null, "chưa có sản phẩm để tạo đơn");
+                    return;
+                }
                 try {
                     serviceNhapHang.khoiTaoDonHang(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
                     int id = serviceNhapHang.hoaDon(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
                     for (int i = 0; i < _dtmLuuTru.getRowCount(); i++) {
                         serviceSanPhamChiTiet.updateDay(Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 0))));
                         serviceNhapHang.khoiTaoChiTietDonHang(id, Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 0))), Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 6))), Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 7))));
+                        for (int j = 0; j < _dtm.getRowCount(); j++) {
+                            if(Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,0))) == Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,0)))){
+                                int a = Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,6))) + Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,5)));
+                                serviceSanPhamChiTiet.updateSoLuong(a,Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,0))));
+                                _dtm.setValueAt(a,j,5);
+                                break;
+                            }
+                        }
                     }
                     JOptionPane.showMessageDialog(null, "Đã tạo hóa đơn nhập hàng");
-
                     loadTblHoaDonNhapHang();
+                    _dtmLuuTru.setRowCount(0);
+
 
                 } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
                 }
             }
         });

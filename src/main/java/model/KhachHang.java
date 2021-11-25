@@ -15,6 +15,12 @@ public class KhachHang {
         this.diem = diem;
     }
 
+    public KhachHang(String ten, String sdt, int diem) {
+        this.ten = ten;
+        this.sdt = sdt;
+        this.diem = diem;
+    }
+
     public int getId() {
         return id;
     }

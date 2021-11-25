@@ -13,7 +13,6 @@ import java.util.List;
 public class serviceKhachHang {
     List<KhachHang> _lst;
     Connectt con = new Connectt();
-
     public serviceKhachHang(){
         _lst = new ArrayList<>();
     }
@@ -25,20 +24,54 @@ public class serviceKhachHang {
         pm.setString(1, khachHang.getTen());
         pm.setString(2, khachHang.getSdt());
         pm.setInt(3, khachHang.getDiem());
-//        if(getIndex(khachHang.getSdt()) != -1){
-//            return "khách hàng  này đã có";
-//        }
+        if(getIndex(khachHang.getSdt()) != -1){
+            return "khách hàng  này đã có";
+        }
         if (pm.executeUpdate() > 0) {
             return "Thêm khách hàng thành công";
         }
         return "Thêm không thành công";
     }
 
+    public KhachHang timTen(String sdt)throws SQLException{
+        String sql = "select tenKH , id, tichdiem from khachhang where sdt = '" + sdt +"'";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        ResultSet rs = pm.executeQuery();
+        KhachHang kh = new KhachHang();
+        if (rs.next()){
+            kh.setTen(rs.getString(1));
+            kh.setId(rs.getInt(2));
+            kh.setDiem(rs.getInt(3));
+           return kh;
+        }
+        return null;
+    }
+
+    public void suaDiem(int id , int diem) throws SQLException{
+        String sql  = "update khachhang set tichdiem = ? where id = ?";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        pm.setInt(1, diem);
+        pm.setInt(2, id);
+        pm.executeUpdate();
+    }
+
+
+
+    public String timTenTheoID(int id)throws SQLException{
+        String sql = "select tenKH from khachhang where id = '" + id +"'";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        ResultSet rs = pm.executeQuery();
+        if (rs.next()){
+
+            return rs.getString(1);
+        }
+        return null;
+    }
+
 
     // phương thức sửa khách hàng
     public String suaKhachHang(KhachHang khachHang) throws SQLException {
         String sql  = "update khachhang set tenKH = ?, sdt = ? where id = ?";
-        System.out.println(khachHang.getId());
         PreparedStatement pm = con.con().prepareStatement(sql);
         pm.setString(1, khachHang.getTen());
         pm.setString(2, khachHang.getSdt());

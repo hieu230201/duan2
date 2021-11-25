@@ -28,7 +28,7 @@ public class formKhachHang extends JFrame {
     serviceKhachHang serviceKhachHang = new serviceKhachHang();
 
     public formKhachHang() throws SQLException, IOException {
-
+        tabbedPane1.setSelectedIndex(1);
         this.setTitle("Thượng đế của cửa hàng");
         this.setContentPane(mainPanel);
         this.setSize(500, 300);

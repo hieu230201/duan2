@@ -40,12 +40,14 @@ public class formNhanVien extends JFrame {
     private JTextField txtMaNV;
     private JTextField txtTimKiem;
     private JButton btnTBLXoa;
+    private JPanel pnlQuanLi;
+    private JPanel pnlDanhSach;
     DefaultTableModel _dtm;
     serviceNhanVien _list = new serviceNhanVien();
     boolean check = false;
 
     public formNhanVien() throws SQLException, IOException {
-
+        tabbedPane1.setSelectedIndex(1);
         this.setTitle("Quản lí nhân viên");
         this.setContentPane(mainPanel);
         this.setSize(700, 500);
@@ -202,7 +204,22 @@ public class formNhanVien extends JFrame {
         btnXoa.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 String input = JOptionPane.showInputDialog("Mời bạn nhập mã nhân viên cần xóa");
+                if(check){
+                    try {
+                        if(_list.boNhanVien(input)){
+                            JOptionPane.showMessageDialog(null, "Xóa nhân viên thành công");
+                            loadtblXoa();
+                            return;
+                        }else {
+                            JOptionPane.showMessageDialog(null, "Nhân viên này có liên quan tới các hóa đơn nên không thể xóa");
+                            return;
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
                 try {
                     JOptionPane.showMessageDialog(null, _list.deleteNV(input));
                     xoaForm();

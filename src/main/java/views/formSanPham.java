@@ -41,6 +41,7 @@ public class formSanPham extends JFrame {
     serviceSanPham _lstSP = new serviceSanPham();
 
     public formSanPham() throws IOException, SQLException {
+        tabbedPane1.setSelectedIndex(1);
         this.setTitle("Quản lí sản phẩm");
         this.setContentPane(mainPanel);
         this.setSize(600, 450);

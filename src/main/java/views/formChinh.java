@@ -1,7 +1,16 @@
 package views;
 
 import dao.Log;
+import io.github.cdimascio.dotenv.Dotenv;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,6 +23,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Level;
 
 public class formChinh extends JFrame {
@@ -50,7 +60,7 @@ public class formChinh extends JFrame {
         this.setResizable(false); // chống chỉnh sửa size frame
         this.setVisible(true);
         run();
-
+        Dotenv dotenv = Dotenv.configure().load();
         // khi mở form sẽ mã nhân viên và vai trò của nhân viên đó
         addWindowListener(new WindowAdapter() {
             @Override
@@ -131,6 +141,7 @@ public class formChinh extends JFrame {
                     }
                 }
                 formDoiMatKhau.setUser(user);
+                formDoiMatKhau.setRole(role);
                 dispose();
             }
         });
@@ -280,6 +291,101 @@ public class formChinh extends JFrame {
                     formNhapHang.setUser(user);
                     dispose();
                 } catch (IOException | SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        // nút báo lỗi khi gặp sự cố
+        btnBaoLoi.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i = JOptionPane.showConfirmDialog(null, "Bạn có muốn gửi lỗi cho admin không?", "Hỏi", JOptionPane.YES_NO_OPTION);
+                if (i == JOptionPane.YES_OPTION) {
+
+                    String user = dotenv.get("MY_ENV_VAR1");
+                    String pass = dotenv.get("MY_EVV_VAR2");
+                    String to = "hieuntph15836@fpt.edu.vn";
+                    String subject = "Lỗi Chương Trình Dự Án Mẫu";
+                    String message = "Admin ơi fix lỗi cho em đi ";
+                    Properties props = System.getProperties();
+                    props.put("mail.smtp.user", "username");
+                    props.put("mail.smtp.host", "smtp.gmail.com");
+                    props.put("mail.smtp.port", "587");
+                    props.put("mail.debug", "true");
+                    props.put("mail.smtp.auth", "true");
+                    props.put("mail.smtp.starttls.enable", "true");
+                    props.put("mail.smtp.EnableSSL.enable", "true");
+
+                    props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                    props.setProperty("mail.smtp.socketFactory.fallback", "false");
+                    props.setProperty("mail.smtp.port", "465");
+                    props.setProperty("mail.smtp.socketFactory.port", "465");
+
+                    Session sessiona = Session.getInstance(props,
+                            new Authenticator() {
+                                protected PasswordAuthentication getPasswordAuthentication() {
+                                    return new PasswordAuthentication(user, pass);
+                                }
+                            });
+                    try {
+                        Message messagea = new MimeMessage(sessiona);
+                        messagea.setFrom(new InternetAddress(user));
+                        messagea.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+                        messagea.setSubject(subject);
+
+                        messagea.setText(message);
+                        MimeBodyPart messageBodyPart = new MimeBodyPart();
+                        Multipart multipart = new MimeMultipart();
+                        messageBodyPart = new MimeBodyPart();
+                        String fileName = "hieupro.txt";
+                        DataSource source = new FileDataSource("\\Desktop\\duan2\\hieupro.txt");
+                        messageBodyPart.setDataHandler(new DataHandler(source));
+                        messageBodyPart.setFileName(fileName);
+                        multipart.addBodyPart(messageBodyPart);
+                        messagea.setContent(multipart);
+                        Transport.send(messagea);
+                        JOptionPane.showMessageDialog(null, "Gửi lỗi thành công");
+                    } catch (Exception a) {
+                        throw new RuntimeException(a);
+                    }
+                }
+            }
+        });
+
+        // nút bán hàng
+        btnbanHang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formBanHang formBanHang = new formBanHang();
+                    formBanHang.setRole(role);
+                    formBanHang.setUser(user);
+                    dispose();
+                } catch (SQLException ex) {
+                    try {
+                        baoLoi(ex);
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        // nút bán hàng
+        mniXuatHang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formBanHang formBanHang = new formBanHang();
+                    formBanHang.setRole(role);
+                    formBanHang.setUser(user);
+                    dispose();
+                } catch (SQLException ex) {
                     try {
                         baoLoi(ex);
                     } catch (IOException exc) {

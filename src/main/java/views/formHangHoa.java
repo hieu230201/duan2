@@ -40,13 +40,18 @@ public class formHangHoa extends JFrame {
     private JLabel lblHinh;
     private JButton btnLoadAnh;
     private JButton btnUpdate;
+    private JButton btnTrangDau;
+    private JButton btnTrangCuoi;
+    private JButton btnLui;
+    private JButton btnTien;
+    private JLabel lblSoTrang;
     DefaultTableModel _dtm;
     boolean check = false;
     String pic = "";
     serviceLoaiSP serviceLoaiSP = new serviceLoaiSP();
     serviceSanPham serviceSanPham = new serviceSanPham();
     serviceSanPhamChiTiet serviceSanPhamChiTiet = new serviceSanPhamChiTiet();
-
+    int soTrang , trang = 1;
     public formHangHoa() throws IOException, SQLException {
 
         this.setTitle("Cửa sổ hàng hóa");
@@ -69,8 +74,17 @@ public class formHangHoa extends JFrame {
         tblHangHoa.setRowSorter(rowSorter);
         tblHangHoa.setDefaultRenderer(Object.class, renderer);
         loadCBC();
-        loadtbl();
+        //loadtbl();
+        loadtblTrang();
         loadCBCSP();
+
+        if(serviceSanPhamChiTiet.count() % 10 == 0){
+            soTrang = serviceSanPhamChiTiet.count() / 10;
+        }else {
+            soTrang = serviceSanPhamChiTiet.count() / 10 + 1;
+        }
+        lblSoTrang.setText("1/"+soTrang);
+        tblHangHoa.setModel(_dtm);
 
 
         // mở chương trình và lưu giá trị
@@ -257,6 +271,61 @@ public class formHangHoa extends JFrame {
                 }
             }
         });
+
+        btnTrangDau.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                trang = 1;
+                lblSoTrang.setText(trang+"/"+soTrang);
+                try {
+                    loadtblTrang();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        btnTrangCuoi.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                trang = soTrang;
+                lblSoTrang.setText(trang+"/"+soTrang);
+                try {
+                    loadtblTrang();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        btnLui.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                trang--;
+                if(trang < 1){
+                    trang = soTrang;
+                }
+                lblSoTrang.setText(trang+"/"+soTrang);
+                try {
+                    loadtblTrang();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        btnTien.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                trang++;
+                if(trang > soTrang){
+                    trang = 1;
+                }
+                lblSoTrang.setText(trang+"/"+soTrang);
+                try {
+                    loadtblTrang();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
 
@@ -287,6 +356,21 @@ public class formHangHoa extends JFrame {
         }
         return null;
 
+    }
+
+    // phương thức load tbl phân trang
+    private void loadtblTrang() throws SQLException{
+        _dtm = (DefaultTableModel) tblHangHoa.getModel();
+        if (_dtm.getRowCount() > 0) {
+            _dtm.setRowCount(0);
+        }
+        for (SanPhamChiTiet a : serviceSanPhamChiTiet.getList(trang)
+        ) {
+            _dtm.addRow(new Object[]{
+                    a.getIdChiTiet(), a.getName(), a.getSoLuong(), a.getGiaBan(), a.getGiaVon(), a.getSize(), a.getColor(), a.getNgayNhap() == null ? "chưa có" : a.getNgayNhap()
+            });
+
+        }
     }
 
     // phương thức load tbl

@@ -21,13 +21,12 @@ public class serviceNhapHang {
 
 
     // khởi tạo 1 đơn hàng
-    public void khoiTaoDonHang(String ma, int idNguonHang,String a, int giaTri) throws SQLException {
-        System.out.println(ma + " " + idNguonHang + " " + a + " " + giaTri);
+    public void khoiTaoDonHang(String ma, int idNguonHang,String date, int giaTri) throws SQLException {
         String sql = "insert into hoaDonNhapHang values (?,?,?,?)";
         PreparedStatement pm = con.con().prepareStatement(sql);
         pm.setString(1, ma);
         pm.setInt(2, idNguonHang);
-        pm.setDate(3, Date.valueOf(a));
+        pm.setDate(3, Date.valueOf(date));
         pm.setInt(4, giaTri);
         pm.executeUpdate();
     }
