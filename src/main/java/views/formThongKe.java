@@ -2,6 +2,11 @@ package views;
 
 import dao.Log;
 import dao.serviceThongKe;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import untils.Connectt;
 
 import javax.swing.*;
@@ -11,9 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +35,8 @@ public class formThongKe extends JFrame {
     private JComboBox cbcNamDoanhSo;
     private JRadioButton rdbBangDS;
     private JRadioButton rdbBieuDoDS;
+    private JButton btnExcel;
+    private JButton btnExcelDS;
     DefaultTableModel _dtm;
     DefaultTableModel _dtmDoanhSO;
     serviceThongKe serviceThongKe = new serviceThongKe();
@@ -103,6 +108,111 @@ public class formThongKe extends JFrame {
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
+            }
+        });
+
+        // nút in ra excel
+        btnExcel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                XSSFWorkbook wk = new XSSFWorkbook();
+                XSSFSheet sheet = wk.createSheet("sheet 1");
+                XSSFRow row = null;
+                Cell cell = null;
+                row = sheet.createRow(0);
+                cell = row.createCell(0, CellType.STRING);
+                cell.setCellValue("Thang");
+                cell = row.createCell(1, CellType.STRING);
+                cell.setCellValue("So San Pham");
+                cell = row.createCell(2, CellType.STRING);
+                cell.setCellValue("Tong Gia Ban");
+                cell = row.createCell(3, CellType.STRING);
+                cell.setCellValue("So San Pham mua");
+                cell = row.createCell(4, CellType.STRING);
+                cell.setCellValue("Tong Gia Von");
+                cell = row.createCell(5, CellType.STRING);
+                cell.setCellValue("Doanh Thu");
+
+                for (int i = 1; i <= _dtm.getRowCount(); i++) {
+                    row = sheet.createRow(i);
+                    cell = row.createCell(0, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhThu.getValueAt(i-1, 0)));
+                    cell = row.createCell(1, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhThu.getValueAt(i-1, 1)));
+                    cell = row.createCell(2, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhThu.getValueAt(i-1, 2)));
+                    cell = row.createCell(3, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhThu.getValueAt(i-1, 3)));
+                    cell = row.createCell(4, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhThu.getValueAt(i-1, 4)));
+                    cell = row.createCell(5, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhThu.getValueAt(i-1, 5)));
+                }
+
+                File file = new File("D:/hehe.xlsx");
+                FileOutputStream fis = null;
+                try {
+                    fis = new FileOutputStream(file);
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    wk.write(fis);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    fis.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+
+            }
+        });
+        btnExcelDS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                XSSFWorkbook wk = new XSSFWorkbook();
+                XSSFSheet sheet = wk.createSheet("sheet 1");
+                XSSFRow row = null;
+                Cell cell = null;
+                row = sheet.createRow(0);
+                cell = row.createCell(0, CellType.STRING);
+                cell.setCellValue("Ma San Pham");
+                cell = row.createCell(1, CellType.STRING);
+                cell.setCellValue("Ten San Pham");
+                cell = row.createCell(2, CellType.STRING);
+                cell.setCellValue("So Lượng Bán");
+
+                for (int i = 1; i <= _dtmDoanhSO.getRowCount(); i++) {
+                    row = sheet.createRow(i);
+                    cell = row.createCell(0, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhSo.getValueAt(i - 1, 0)));
+                    cell = row.createCell(1, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhSo.getValueAt(i - 1, 0)));
+                    cell = row.createCell(2, CellType.STRING);
+                    cell.setCellValue(String.valueOf(tblDoanhSo.getValueAt(i - 1, 0)));
+                }
+
+                File file = new File("./home/hihi.xlsx");
+                FileOutputStream fis = null;
+                try {
+                    fis = new FileOutputStream(file);
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    wk.write(fis);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    fis.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
             }
         });
     }

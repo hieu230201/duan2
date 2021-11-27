@@ -20,10 +20,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 
 public class formNhapHang extends JFrame {
@@ -44,9 +46,11 @@ public class formNhapHang extends JFrame {
     private JButton btnTaoDon;
     private JLabel lblTienLe;
     private JButton btnXoa;
+    private JTable tblChiTiet;
     DefaultTableModel _dtm;
     DefaultTableModel _dtmHoaDon;
     DefaultTableModel _dtmLuuTru;
+    DefaultTableModel _dtmChiTiet;
     serviceNguonHang serviceNguonHang = new serviceNguonHang();
     serviceSanPhamChiTiet serviceSanPhamChiTiet = new serviceSanPhamChiTiet();
     serviceNhapHang serviceNhapHang = new serviceNhapHang();
@@ -63,6 +67,7 @@ public class formNhapHang extends JFrame {
         _dtm = (DefaultTableModel) tblHangHoa.getModel();
         _dtmHoaDon = (DefaultTableModel) tblHoaDonNhap.getModel();
         _dtmLuuTru = (DefaultTableModel) tblLuuTru.getModel();
+        _dtmChiTiet = (DefaultTableModel) tblChiTiet.getModel();
         _dtm.setColumnIdentifiers(new String[]{
                 "Mã sản phẩm", "Tên sản phẩm", "Loại", "Size", "Màu sắc", "Số lượng trong kho", "Giá nhập"
         });
@@ -71,6 +76,9 @@ public class formNhapHang extends JFrame {
         });
         _dtmLuuTru.setColumnIdentifiers(new String[]{
                 "Mã sản phẩm", "Tên sản phẩm", "Nguồn Hàng", "Loại", "Size", "Màu sắc", "Số lượng", "Giá nhập"
+        });
+        _dtmChiTiet.setColumnIdentifiers(new String []{
+                "Mã hóa đơn","Mã nhân viên", "Tên Sản Phẩm", "Size", "Màu sắc", "Số lượng", "Giá nhập"
         });
 
         loadCbcNguonHang();
@@ -154,7 +162,7 @@ public class formNhapHang extends JFrame {
                 int i = tblHangHoa.getSelectedRow();
                 txtMaSP.setText(String.valueOf(tblHangHoa.getValueAt(i, 0)));
                 txtGiaNhap.setText(String.valueOf(tblHangHoa.getValueAt(i, 6)));
-                lblTienLe.setText(String.valueOf((int) (Double.parseDouble(txtGiaNhap.getText()) * Integer.parseInt(cbcSoLuong.getSelectedItem().toString()))));
+                lblTienLe.setText(toCurrency(soNguyen(txtGiaNhap.getText()) * Integer.parseInt(cbcSoLuong.getSelectedItem().toString())));
 
 
             }
@@ -164,7 +172,11 @@ public class formNhapHang extends JFrame {
         cbcSoLuong.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                lblTienLe.setText(String.valueOf((int) (Double.parseDouble(txtGiaNhap.getText()) * Integer.parseInt(cbcSoLuong.getSelectedItem().toString()))));
+                if(lblTienLe.getText().equals("")){
+                    return;
+                }
+                lblTienLe.setText(toCurrency(soNguyen(txtGiaNhap.getText()) * Integer.parseInt(cbcSoLuong.getSelectedItem().toString())));
+
             }
         });
 
@@ -194,8 +206,8 @@ public class formNhapHang extends JFrame {
                             if (String.valueOf(tblHangHoa.getValueAt(row[0], 0)).equals(String.valueOf(tblLuuTru.getValueAt(j, 0)))) {
                                 int soLuong = Integer.parseInt(cbcSoLuong.getSelectedItem().toString()) + Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 6)));
                                 tblLuuTru.setValueAt(soLuong, j, 6);
-                                int tong = (int) (soLuong * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(row[0], 6))));
-                                tblLuuTru.setValueAt(tong, j, 7);
+                                long tong =  (soLuong * soNguyen(String.valueOf(tblHangHoa.getValueAt(row[0], 6))));
+                                tblLuuTru.setValueAt(toCurrency(tong), j, 7);
                                 dem++;
                                 break;
                             }
@@ -230,30 +242,30 @@ public class formNhapHang extends JFrame {
                                 if (String.valueOf(tblHangHoa.getValueAt(arr.get(i), 0)).equals(String.valueOf(tblLuuTru.getValueAt(j, 0)))) {
                                     int soLuong = Integer.parseInt(cbcSoLuong.getSelectedItem().toString()) + Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 6)));
                                     tblLuuTru.setValueAt(soLuong, j, 6);
-                                    int tong = (int) (soLuong * Double.parseDouble(String.valueOf(tblHangHoa.getValueAt(arr.get(i), 6))));
-                                    tblLuuTru.setValueAt(tong, j, 7);
+                                    long tong =  (soLuong * soNguyen(String.valueOf(tblHangHoa.getValueAt(arr.get(i), 6))));
+                                    tblLuuTru.setValueAt(toCurrency(tong), j, 7);
                                     arr.remove(i);
                                     break;
                                 }
                             }
                         }
                         for (int i = 0; i < arr.size(); i++) {
-                            double a = (double) tblHangHoa.getValueAt(arr.get(i), 6) * Integer.parseInt(String.valueOf(cbcSoLuong.getSelectedItem().toString()));
+                            long a =  soNguyen(String.valueOf(tblHangHoa.getValueAt(arr.get(i), 6))) * Integer.parseInt(String.valueOf(cbcSoLuong.getSelectedItem().toString()));
                             _dtmLuuTru.addRow(new Object[]{
                                     String.valueOf(tblHangHoa.getValueAt(arr.get(i), 0)), String.valueOf(tblHangHoa.getValueAt(arr.get(i), 1)), cbcNguonhang.getSelectedItem().toString(),
                                     String.valueOf(tblHangHoa.getValueAt(arr.get(i), 2)), String.valueOf(tblHangHoa.getValueAt(arr.get(i), 3)),
-                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i), 4)), cbcSoLuong.getSelectedItem().toString(), (int) a
+                                    String.valueOf(tblHangHoa.getValueAt(arr.get(i), 4)), cbcSoLuong.getSelectedItem().toString(), toCurrency(a)
                             });
                         }
 
                     } else {
                         for (int rows : row
                         ) {
-                            double a = (double) tblHangHoa.getValueAt(rows, 6) * Integer.parseInt(String.valueOf(cbcSoLuong.getSelectedItem().toString()));
+                            long a = soNguyen(String.valueOf(tblHangHoa.getValueAt(rows, 6))) * Integer.parseInt(String.valueOf(cbcSoLuong.getSelectedItem().toString()));
                             _dtmLuuTru.addRow(new Object[]{
                                     String.valueOf(tblHangHoa.getValueAt(rows, 0)), String.valueOf(tblHangHoa.getValueAt(rows, 1)), cbcNguonhang.getSelectedItem().toString(),
                                     String.valueOf(tblHangHoa.getValueAt(rows, 2)), String.valueOf(tblHangHoa.getValueAt(rows, 3)),
-                                    String.valueOf(tblHangHoa.getValueAt(rows, 4)), cbcSoLuong.getSelectedItem().toString(), (int) a
+                                    String.valueOf(tblHangHoa.getValueAt(rows, 4)), cbcSoLuong.getSelectedItem().toString(), toCurrency(a)
                             });
                         }
                     }
@@ -263,9 +275,9 @@ public class formNhapHang extends JFrame {
                 if (_dtmLuuTru.getRowCount() > 0) {
                     int tong = 0;
                     for (int j = 0; j < _dtmLuuTru.getRowCount(); j++) {
-                        tong += Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 7)));
+                        tong += soNguyen(String.valueOf(tblLuuTru.getValueAt(j, 7)));
                     }
-                    lblTongTien.setText(String.valueOf(tong));
+                    lblTongTien.setText(toCurrency(tong));
                 }
             }
         });
@@ -279,11 +291,11 @@ public class formNhapHang extends JFrame {
                     return;
                 }
                 try {
-                    serviceNhapHang.khoiTaoDonHang(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
-                    int id = serviceNhapHang.hoaDon(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), Integer.parseInt(lblTongTien.getText()));
+                    serviceNhapHang.khoiTaoDonHang(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), soNguyen(lblTongTien.getText()));
+                    int id = serviceNhapHang.hoaDon(user, serviceNguonHang.getID(cbcNguonhang.getSelectedItem().toString()), String.valueOf(LocalDate.now()), soNguyen(lblTongTien.getText()));
                     for (int i = 0; i < _dtmLuuTru.getRowCount(); i++) {
                         serviceSanPhamChiTiet.updateDay(Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 0))));
-                        serviceNhapHang.khoiTaoChiTietDonHang(id, Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 0))), Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 6))), Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 7))));
+                        serviceNhapHang.khoiTaoChiTietDonHang(id, Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 0))), Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i, 6))), soNguyen(String.valueOf(tblLuuTru.getValueAt(i, 7))));
                         for (int j = 0; j < _dtm.getRowCount(); j++) {
                             if(Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,0))) == Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,0)))){
                                 int a = Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(i,6))) + Integer.parseInt(String.valueOf(tblHangHoa.getValueAt(j,5)));
@@ -317,11 +329,28 @@ public class formNhapHang extends JFrame {
                     _dtmLuuTru.removeRow(row[i]);
                 }
                 if (_dtmLuuTru.getRowCount() > 0) {
-                    int tong = 0;
+                    long tong = 0;
                     for (int j = 0; j < _dtmLuuTru.getRowCount(); j++) {
-                        tong += Integer.parseInt(String.valueOf(tblLuuTru.getValueAt(j, 7)));
+                        tong += soNguyen(String.valueOf(tblLuuTru.getValueAt(j, 7)));
                     }
-                    lblTongTien.setText(String.valueOf(tong));
+                    lblTongTien.setText(toCurrency(tong));
+                }
+                if(_dtmLuuTru.getRowCount() == 0){
+                    lblTongTien.setText(toCurrency(0));
+                }
+            }
+        });
+
+        // chọn hóa đơn để xem chi tiết
+        tblHoaDonNhap.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int i = tblHoaDonNhap.getSelectedRow();
+                try {
+                    serviceNhapHang.inHoaDonChiTiet(Integer.parseInt(String.valueOf(tblHoaDonNhap.getValueAt(i,0))) , _dtmChiTiet);
+
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -338,11 +367,27 @@ public class formNhapHang extends JFrame {
         for (SanPhamChiTiet a : serviceSanPhamChiTiet.get_list()
         ) {
             _dtm.addRow(new Object[]{
-                    a.getIdChiTiet(), a.getName(), a.getTen(), a.getSize(), a.getColor(), a.getSoLuong(), a.getGiaVon()
+                    a.getIdChiTiet(), a.getName(), a.getTen(), a.getSize(), a.getColor(), a.getSoLuong(), toCurrency((long) a.getGiaVon())
             });
         }
 
 
+    }
+
+
+    // quy đổi tiền
+    public static String toCurrency(long tienTe){
+        Locale lc = new Locale("vi","VN");
+        NumberFormat nf = NumberFormat.getCurrencyInstance(lc);
+        return  nf.format(tienTe);
+    }
+
+    // quy đổi tiền về long
+    public static long soNguyen(String tien){
+        tien = tien.substring(0, tien.length() - 2).trim();
+        tien = tien.replace(".", "");
+        System.out.println(tien);
+        return Long.parseLong(tien);
     }
 
 
@@ -355,7 +400,7 @@ public class formNhapHang extends JFrame {
         for (Nhaphang a : serviceNhapHang.get_lst()
         ) {
             _dtmHoaDon.addRow(new Object[]{
-                    a.getIdNhapHang(), a.getMaNhanVien(), serviceNguonHang.getTen(a.getIdNguonHang()), a.getNgayNhap(), a.getGiaNhap()
+                    a.getIdNhapHang(), a.getMaNhanVien(), serviceNguonHang.getTen(a.getIdNguonHang()), a.getNgayNhap(), toCurrency(a.getGiaNhap())
             });
         }
     }

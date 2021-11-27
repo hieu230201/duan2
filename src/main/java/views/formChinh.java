@@ -49,6 +49,7 @@ public class formChinh extends JFrame {
     private JButton btnSanPham;
     private JButton btnBaoLoi;
     private JButton btnKhachHang;
+    private JMenuItem mniTraHang;
 
     public formChinh() throws IOException {
 
@@ -392,6 +393,25 @@ public class formChinh extends JFrame {
                         exc.printStackTrace();
                     }
                 }
+            }
+        });
+
+        // nút bán hàng
+        mniTraHang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    formTraHang formTraHang = new formTraHang();
+//                    formTraHang.setRole(role);
+//                    formTraHang.setUser(user);
+//                    dispose();
+//                } catch (SQLException ex) {
+//                    try {
+//                        baoLoi(ex);
+//                    } catch (IOException exc) {
+//                        exc.printStackTrace();
+//                    }
+//                }
             }
         });
     }
