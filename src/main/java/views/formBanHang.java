@@ -318,9 +318,9 @@ public class formBanHang extends JFrame {
                 if (_dtmBanHang.getRowCount() > 0) {
                     long tong = 0;
                     for (int j = 0; j < _dtmBanHang.getRowCount(); j++) {
-                        tong += Double.parseDouble(String.valueOf(_dtmBanHang.getValueAt(j, 6)));
+                        tong += soNguyen(String.valueOf(_dtmBanHang.getValueAt(j, 6)));
                     }
-                    lblTong.setText(String.valueOf(tong));
+                    lblTong.setText(toCurrency(tong ));
                 }
                 if(_dtmBanHang.getRowCount() == 0){
                     lblTong.setText("0");

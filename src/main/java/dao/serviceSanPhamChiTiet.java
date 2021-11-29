@@ -66,6 +66,21 @@ public class serviceSanPhamChiTiet {
         return "Thêm không thành công";
     }
 
+
+    // tìm sản phẩm để lấy id theo thuộc tính
+    public int getIDSP(String name, String mau, String size) throws SQLException {
+        String sql = "select chiTietSP.id from chiTietSP join SanPham SP on SP.id = chiTietSP.id_sp where tensp = ? and color = ? and sizesp = ?";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        pm.setString(1, name);
+        pm.setString(2, mau);
+        pm.setString(3, size);
+        ResultSet rs = pm.executeQuery();
+        if(rs.next()){
+            return rs.getInt(1);
+        }
+        return -1;
+    }
+
     // sửa chi tiết cho sản phảm
     public String updateSanPham(SanPhamChiTiet sp) throws  SQLException{
         String sql = "update chiTietSP set id_sp = ?, color = ?, sizesp = ?, giaban = ?, giavon = ?, hinh = ? where id = ?";
@@ -91,7 +106,7 @@ public class serviceSanPhamChiTiet {
     }
 
 
-    //đếm số người học
+    //đếm số sản phẩm
     public int count() throws SQLException{
         int dem = 0;
         String sql = "select count(*) from chiTietSP";

@@ -344,7 +344,7 @@ public class formChinh extends JFrame {
                         Multipart multipart = new MimeMultipart();
                         messageBodyPart = new MimeBodyPart();
                         String fileName = "hieupro.txt";
-                        DataSource source = new FileDataSource("\\Desktop\\duan2\\hieupro.txt");
+                        DataSource source = new FileDataSource("hieupro.txt");
                         messageBodyPart.setDataHandler(new DataHandler(source));
                         messageBodyPart.setFileName(fileName);
                         multipart.addBodyPart(messageBodyPart);
@@ -400,18 +400,15 @@ public class formChinh extends JFrame {
         mniTraHang.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                try {
-//                    formTraHang formTraHang = new formTraHang();
-//                    formTraHang.setRole(role);
-//                    formTraHang.setUser(user);
-//                    dispose();
-//                } catch (SQLException ex) {
-//                    try {
-//                        baoLoi(ex);
-//                    } catch (IOException exc) {
-//                        exc.printStackTrace();
-//                    }
-//                }
+                formTraHang formTraHang = null;
+                try {
+                    formTraHang = new formTraHang();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                formTraHang.setRole(role);
+                formTraHang.setUser(user);
+                dispose();
             }
         });
     }
@@ -447,6 +444,8 @@ public class formChinh extends JFrame {
         if (role != 1) {
             mniNhanVien.setEnabled(false);
             mniThongKe.setEnabled(false);
+            btnNhapHang.setEnabled(false);
+            mniNhapHang.setEnabled(false);
         }
         System.out.println(user + " bên form chính");
     }

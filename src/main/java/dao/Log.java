@@ -15,6 +15,7 @@ public class Log {
         if (!file1.exists()) {
             file1.createNewFile();
         }
+        System.out.println(file1.getName());
         fh = new FileHandler(file, true);
         logger = Logger.getLogger("hi");
         logger.addHandler(fh);
