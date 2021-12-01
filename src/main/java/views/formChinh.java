@@ -411,6 +411,22 @@ public class formChinh extends JFrame {
                 dispose();
             }
         });
+
+
+        mniThongKe.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    formThongKe formThongKe = new formThongKe();
+                    formThongKe.setRole(role);
+                    formThongKe.setUser(user);
+                    dispose();
+                } catch (IOException | SQLException ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        });
     }
 
 

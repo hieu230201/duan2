@@ -116,20 +116,22 @@ public class formKhachHang extends JFrame {
         btnSua.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int i = tblKhachHang.getSelectedRow();
-                try {
-                    KhachHang khachHang = serviceKhachHang.getlist().get(i);
-                    KhachHang khachHang1 = new KhachHang(khachHang.getId(), txtName.getText(), txtSdt.getText(), khachHang.getDiem());
-                    JOptionPane.showMessageDialog(null, serviceKhachHang.suaKhachHang(khachHang1));
-                    loadtbl();
-                    xoaForm();
-                } catch (SQLException ex) {
-                    try {
-                        baoLoi(ex);
-                    } catch (IOException exc) {
-                        exc.printStackTrace();
-                    }
-                }
+               if(loi()){
+                   int i = tblKhachHang.getSelectedRow();
+                   try {
+                       KhachHang khachHang = serviceKhachHang.getlist().get(i);
+                       KhachHang khachHang1 = new KhachHang(khachHang.getId(), txtName.getText(), txtSdt.getText(), khachHang.getDiem());
+                       JOptionPane.showMessageDialog(null, serviceKhachHang.suaKhachHang(khachHang1));
+                       loadtbl();
+                       xoaForm();
+                   } catch (SQLException ex) {
+                       try {
+                           baoLoi(ex);
+                       } catch (IOException exc) {
+                           exc.printStackTrace();
+                       }
+                   }
+               }
             }
         });
     }
@@ -149,37 +151,28 @@ public class formKhachHang extends JFrame {
 
     // phương thức check lỗi
     private boolean loi() {
-//        if (txtName.getText().isEmpty() || txtName.getText().isBlank()) {
-//            JOptionPane.showMessageDialog(null, "Tên không được để trống", "Cảnh Báo", 2);
-//            txtName.requestFocus();
-//            return false;
-//        }
-//
-//        if (!txtName.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
-//            JOptionPane.showMessageDialog(null, "Tên vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
-//            return false;
-//        }
-//
-//        if (txtDiaChi.getText().isEmpty() || txtDiaChi.getText().isBlank()) {
-//            JOptionPane.showMessageDialog(null, "Địa chỉ không được để trống", "Cảnh Báo", 2);
-//            txtDiaChi.requestFocus();
-//            return false;
-//        }
-//
-//        if (!txtDiaChi.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
-//            JOptionPane.showMessageDialog(null, "Địa chỉ vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
-//            return false;
-//        }
-//        if (txtSdt.getText().isEmpty() || txtSdt.getText().isBlank()) {
-//            JOptionPane.showMessageDialog(null, "Sđt không được để trống", "Cảnh Báo", 2);
-//            txtSdt.requestFocus();
-//            return false;
-//        }
-//
-//        if (!txtSdt.getText().matches("0[0-9]{10}")) {
-//            JOptionPane.showMessageDialog(null, "Bạn đã nhập sai sđt", "Lỗi", JOptionPane.WARNING_MESSAGE);
-//            return false;
-//        }
+        if (txtName.getText().isEmpty() || txtName.getText().isBlank()) {
+            JOptionPane.showMessageDialog(null, "Tên không được để trống", "Cảnh Báo", 2);
+            txtName.requestFocus();
+            return false;
+        }
+
+        if (!txtName.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
+            JOptionPane.showMessageDialog(null, "Tên vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+
+        if (txtSdt.getText().isEmpty() || txtSdt.getText().isBlank()) {
+            JOptionPane.showMessageDialog(null, "Sđt không được để trống", "Cảnh Báo", 2);
+            txtSdt.requestFocus();
+            return false;
+        }
+
+        if (!txtSdt.getText().matches("0[0-9]{10}")) {
+            JOptionPane.showMessageDialog(null, "Bạn đã nhập sai sđt", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
 
         return true;
     }

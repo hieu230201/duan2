@@ -28,13 +28,9 @@ public class formThongKe extends JFrame {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
     private JComboBox cbcNamDoanhThu;
-    private JRadioButton rdbTheoBangDT;
-    private JRadioButton rdbBieuĐoT;
     private JTable tblDoanhThu;
     private JTable tblDoanhSo;
     private JComboBox cbcNamDoanhSo;
-    private JRadioButton rdbBangDS;
-    private JRadioButton rdbBieuDoDS;
     private JButton btnExcel;
     private JButton btnExcelDS;
     DefaultTableModel _dtm;

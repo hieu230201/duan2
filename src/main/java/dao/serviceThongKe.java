@@ -19,10 +19,14 @@ public class serviceThongKe {
         String sql = "select  count(distinct chiTietSP.id) soSPBanDuoc, sum(cTHDB.giaSanPham) tongDonHangBan from chiTietSP join chiTietHoaDonBan cTHDB on chiTietSP.id = cTHDB.idChiTietSP where year(cTHDB.ngayBan) = " + nam + " and month(cTHDB.ngayBan) = " + thang + " group by cTHDB.ngayBan";
         PreparedStatement pm = con.con().prepareStatement(sql);
         ResultSet rs = pm.executeQuery();
-        if(rs.next()){
-            a[0] = rs.getString(1);
-            a[1] = rs.getString(2);
-        }else {
+        a[0] = "0";
+        a[1] = "0";
+        while (rs.next()){
+            a[0] = String.valueOf(Integer.parseInt(a[0]) + rs.getInt(1));
+            a[1] = String.valueOf(Integer.parseInt(a[1]) + rs.getInt(2));
+        }
+
+        if(a[0].equals("0")) {
             a[0] = "00";
             a[1] = "00";
         }
