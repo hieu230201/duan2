@@ -126,8 +126,7 @@ public class formNhanVien extends JFrame {
                 if (loi()) {
                     try {
                         JOptionPane.showMessageDialog(null, _list.addNV(nv()));
-                        _dtm.addRow(new Object[]{
-                                nv().getManv(), nv().getHoten(), nv().getDaichi(), nv().getSdt(), nv().getEmail(), nv().getMatkhau(), nv().getRole() == 1 ? "Trưởng Phòng" : "Nhân Viên"});
+                        loadtbl();
                         xoaForm();
                     } catch (SQLException ex) {
                         try {

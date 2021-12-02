@@ -33,8 +33,8 @@ public class formHangHoa extends JFrame {
     private JComboBox cbcTenSP;
     private JComboBox cbcLoaiSP;
     private JTextField txtGiaBan;
-    private JTextField txtSize;
-    private JTextField txtColor;
+    private JComboBox txtSize;
+    private JComboBox txtColor;
     private JButton btnThemHang;
     private JTextField txtGiaVon;
     private JLabel lblHinh;
@@ -45,12 +45,15 @@ public class formHangHoa extends JFrame {
     private JButton btnLui;
     private JButton btnTien;
     private JLabel lblSoTrang;
+    private JButton btnSize;
+    private JButton btnColor;
     DefaultTableModel _dtm;
     boolean check = false;
     String pic = "";
     serviceLoaiSP serviceLoaiSP = new serviceLoaiSP();
     serviceSanPham serviceSanPham = new serviceSanPham();
     serviceSanPhamChiTiet serviceSanPhamChiTiet = new serviceSanPhamChiTiet();
+    serviceSizeColor serviceSizeColor = new serviceSizeColor();
     int soTrang , trang = 1;
     public formHangHoa() throws IOException, SQLException {
 
@@ -85,7 +88,8 @@ public class formHangHoa extends JFrame {
         }
         lblSoTrang.setText("1/"+soTrang);
         tblHangHoa.setModel(_dtm);
-
+        loadCBCSize();
+        loadCBCColor();
 
         // mở chương trình và lưu giá trị
         addWindowListener(new WindowAdapter() {
@@ -189,6 +193,7 @@ public class formHangHoa extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (loi()) {
                     try {
+                        System.out.println("a" + sp().getHinh());
                         JOptionPane.showMessageDialog(null, serviceSanPhamChiTiet.addChiTiet(sp()));
                         loadtbl();
                         xoaForm();
@@ -220,8 +225,8 @@ public class formHangHoa extends JFrame {
 
                 txtGiaBan.setText(String.valueOf(tblHangHoa.getValueAt(i, 3)));
                 txtGiaVon.setText(String.valueOf(tblHangHoa.getValueAt(i, 4)));
-                txtSize.setText(String.valueOf(tblHangHoa.getValueAt(i, 5)));
-                txtColor.setText(String.valueOf(tblHangHoa.getValueAt(i, 6)));
+                txtSize.setSelectedItem(String.valueOf(tblHangHoa.getValueAt(i, 5)));
+                txtColor.setSelectedItem(String.valueOf(tblHangHoa.getValueAt(i, 6)));
 
                 try {
 
@@ -326,15 +331,27 @@ public class formHangHoa extends JFrame {
                 }
             }
         });
+        btnSize.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String ma = JOptionPane.showInputDialog(null, "Mời bạn chọn size cho sản phẩm này");
+                txtSize.addItem(ma);
+            }
+        });
+        btnColor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String ma = JOptionPane.showInputDialog(null, "Mời bạn chọn màu cho sản phẩm này");
+                txtColor.addItem(ma);
+            }
+        });
     }
 
 
     // phương thức xóa form
     private void xoaForm() {
-        txtColor.setText("");
         txtGiaBan.setText("");
         txtGiaVon.setText("");
-        txtSize.setText("");
         pic = "";
         lblHinh.setIcon(null);
     }
@@ -407,11 +424,29 @@ public class formHangHoa extends JFrame {
         }
     }
 
+    private void loadCBCSize () throws SQLException{
+        txtSize.removeAllItems();
+        for (SanPhamChiTiet a: serviceSizeColor.get_lstSize()
+             ) {
+            txtSize.addItem(a.getSize());
+            System.out.println(a.getSize());
+        }
+    }
+
+    private void loadCBCColor () throws SQLException{
+        txtColor.removeAllItems();
+        for (SanPhamChiTiet a: serviceSizeColor.get_lstColor()
+        ) {
+            txtColor.addItem(a.getColor());
+            System.out.println(a.getColor());
+        }
+    }
+
     // phương thức khởi tạo 1 chi tiết sản phẩm
     public SanPhamChiTiet sp() throws SQLException {
         SanPhamChiTiet sp = new SanPhamChiTiet();
-        sp.setSize(txtSize.getText());
-        sp.setColor(txtColor.getText());
+        sp.setSize(String.valueOf(txtSize.getSelectedItem()));
+        sp.setColor(String.valueOf(txtColor.getSelectedItem()));
         sp.setIdSP(serviceSanPham.get1Loai(cbcTenSP.getSelectedItem().toString()));
         sp.setGiaBan(Double.parseDouble(txtGiaBan.getText()));
         sp.setGiaVon(Double.parseDouble(txtGiaVon.getText()));
@@ -422,20 +457,21 @@ public class formHangHoa extends JFrame {
 
     // phương thức check lỗi
     private boolean loi() {
-        if (txtColor.getText().isEmpty() || txtColor.getText().isBlank()) {
-            JOptionPane.showMessageDialog(null, "Màu không được để trống");
-            return false;
-        }
+
         if (txtGiaBan.getText().isEmpty() || txtGiaBan.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Giá bán không được để trống");
+            return false;
+        }
+        if(!txtGiaBan.getText().matches("[0-9]{1,}")){
+            JOptionPane.showMessageDialog(null, "Giá bán phải để số");
             return false;
         }
         if (txtGiaVon.getText().isEmpty() || txtGiaVon.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Giá vốn không được để trống");
             return false;
         }
-        if (txtSize.getText().isEmpty() || txtSize.getText().isBlank()) {
-            JOptionPane.showMessageDialog(null, "Size không được để trống");
+        if(!txtGiaVon.getText().matches("[0-9]{1,}")){
+            JOptionPane.showMessageDialog(null, "Giá vốn phải để số");
             return false;
         }
         return true;

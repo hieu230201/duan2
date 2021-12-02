@@ -52,7 +52,6 @@ public class formBanHang extends JFrame {
     serviceSanPhamChiTiet serviceSanPhamChiTiet = new serviceSanPhamChiTiet();
     serviceKhachHang serviceKhachHang = new serviceKhachHang();
     serviceBanhang serviceBanhang = new serviceBanhang();
-    int id = -1;
     long giaGiam = 0;
     public formBanHang() throws SQLException {
         this.setTitle("Cửa sổ bán hàng");
@@ -400,7 +399,10 @@ public class formBanHang extends JFrame {
 
                 try {
                     // khởi tạo một PdfWriter truyền vào document và FileOutputStream
-                    PdfWriter.getInstance(document, new FileOutputStream("HelloWorld.pdf"));
+                    String date  = String.valueOf(LocalDate.now());
+                    String name = String.valueOf(tbl_chiTiet.getValueAt(0,2));
+                    String hoaDon = name+date+"hoadon";
+                    PdfWriter.getInstance(document, new FileOutputStream(hoaDon+".pdf"));
 
                     // mở file để thực hiện viết
                     document.open();

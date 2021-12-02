@@ -159,17 +159,19 @@ public class formNguonHang extends JFrame {
         btnXoa.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int i = tblNguonHang.getSelectedRow();
-                try {
-                    NguonHang nguonHang = _list.getlist().get(i);
-                    JOptionPane.showMessageDialog(null, _list.deleteNH(nguonHang.getId()));
-                    loadtbl();
-                    xoaForm();
-                } catch (SQLException ex) {
+                if (loi()){
+                    int i = tblNguonHang.getSelectedRow();
                     try {
-                        baoLoi(ex);
-                    } catch (IOException exc) {
-                        exc.printStackTrace();
+                        NguonHang nguonHang = _list.getlist().get(i);
+                        JOptionPane.showMessageDialog(null, _list.deleteNH(nguonHang.getId()));
+                        loadtbl();
+                        xoaForm();
+                    } catch (SQLException ex) {
+                        try {
+                            baoLoi(ex);
+                        } catch (IOException exc) {
+                            exc.printStackTrace();
+                        }
                     }
                 }
             }
@@ -214,53 +216,8 @@ public class formNguonHang extends JFrame {
             }
         });
 
-        // hiện thị thùng rác
-        btnTblXoa.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!check) {
-                    try {
-                        loadtblXoa();
-                    } catch (SQLException ex) {
-                        try {
-                            baoLoi(ex);
-                        } catch (IOException exc) {
-                            exc.printStackTrace();
-                        }
-                    }
-                    check = true;
-                    JOptionPane.showMessageDialog(null, "Đã hiện thị những nguồn hàng bị xóa");
-                    JOptionPane.showMessageDialog(null, "Chọn một nguồn hàng từ bảng để xóa vĩnh viễn hoặc thêm lại");
-                    btnTblXoa.setText("Hiện thị lại nguồn hàng đang sử dụng");
-                    btnThem.setText("Thêm Lại");
-                    btnSua.setEnabled(false);
-                    txtHoTen.setEnabled(false);
-                    txtDiaChi.setEnabled(false);
-                    txtSDT.setEnabled(false);
-                    return;
-                }
 
-                if (check) {
-                    try {
-                        loadtbl();
-                    } catch (SQLException ex) {
-                        try {
-                            baoLoi(ex);
-                        } catch (IOException exc) {
-                            exc.printStackTrace();
-                        }
-                    }
-                    JOptionPane.showMessageDialog(null, "Đã hiện thị những nguồn hàng hiện tại");
-                    btnTblXoa.setText("Hiện thị nguồn hàng đã xóa");
-                    check = false;
-                    btnThem.setText("Thêm");
-                    btnSua.setEnabled(true);
-                    txtHoTen.setEnabled(true);
-                    txtDiaChi.setEnabled(true);
-                    txtSDT.setEnabled(true);
-                }
-            }
-        });
+
     }
 
     // khởi tạo 1 giá trị nguồn hàng
@@ -335,39 +292,39 @@ public class formNguonHang extends JFrame {
     // phương thức check lỗi
 
     private boolean loi() {
-//        if (txtHoTen.getText().isEmpty() || txtHoTen.getText().isBlank()) {
-//            JOptionPane.showMessageDialog(null, "Tên không được để trống", "Cảnh Báo", 2);
-//            txtHoTen.requestFocus();
-//            return false;
-//        }
-//
-//        if (!txtHoTen.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
-//            JOptionPane.showMessageDialog(null, "Tên vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
-//            return false;
-//        }
-//
-//        if (txtDiaChi.getText().isEmpty() || txtDiaChi.getText().isBlank()) {
-//            JOptionPane.showMessageDialog(null, "Địa chỉ không được để trống", "Cảnh Báo", 2);
-//            txtDiaChi.requestFocus();
-//            return false;
-//        }
-//
-//        if (!txtDiaChi.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
-//            JOptionPane.showMessageDialog(null, "Địa chỉ vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
-//            return false;
-//        }
-//
-//
-//        if (txtSDT.getText().isEmpty() || txtSDT.getText().isBlank()) {
-//            JOptionPane.showMessageDialog(null, "Sđt không được để trống", "Cảnh Báo", 2);
-//            txtSDT.requestFocus();
-//            return false;
-//        }
-//
-//        if (!txtSDT.getText().matches("0[0-9]{10}")) {
-//            JOptionPane.showMessageDialog(null, "Bạn đã nhập sai sđt", "Lỗi", JOptionPane.WARNING_MESSAGE);
-//            return false;
-//        }
+        if (txtHoTen.getText().isEmpty() || txtHoTen.getText().isBlank()) {
+            JOptionPane.showMessageDialog(null, "Tên không được để trống", "Cảnh Báo", 2);
+            txtHoTen.requestFocus();
+            return false;
+        }
+
+        if (!txtHoTen.getText().matches("[^0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
+            JOptionPane.showMessageDialog(null, "Tên vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        if (txtDiaChi.getText().isEmpty() || txtDiaChi.getText().isBlank()) {
+            JOptionPane.showMessageDialog(null, "Địa chỉ không được để trống", "Cảnh Báo", 2);
+            txtDiaChi.requestFocus();
+            return false;
+        }
+
+        if (!txtDiaChi.getText().matches("[^!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{1,}")) {
+            JOptionPane.showMessageDialog(null, "Địa chỉ vui lòng chữ cái", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+
+        if (txtSDT.getText().isEmpty() || txtSDT.getText().isBlank()) {
+            JOptionPane.showMessageDialog(null, "Sđt không được để trống", "Cảnh Báo", 2);
+            txtSDT.requestFocus();
+            return false;
+        }
+
+        if (!txtSDT.getText().matches("0[0-9]{1,}")) {
+            JOptionPane.showMessageDialog(null, "Bạn đã nhập sai sđt", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
 
 
         return true;

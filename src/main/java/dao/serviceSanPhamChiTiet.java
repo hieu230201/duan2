@@ -140,6 +140,9 @@ public class serviceSanPhamChiTiet {
 
     // phương thức check trùng ảnh
     public boolean checkAnh(String hinh) throws SQLException {
+        if(hinh.equals("")){
+            return false;
+        }
         String sql = "select * from chiTietSP where hinh = ?";
         PreparedStatement pm1 = con.con().prepareStatement(sql);
         pm1.setString(1, hinh);
@@ -160,5 +163,8 @@ public class serviceSanPhamChiTiet {
         }
         return -1;
     }
+
+
+
 
 }
