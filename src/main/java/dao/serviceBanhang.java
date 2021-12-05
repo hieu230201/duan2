@@ -82,6 +82,19 @@ public class serviceBanhang {
             }
     }
 
+    public void inChiTietDonDoi(int id, DefaultTableModel dtm) throws SQLException {
+        String sql = "select idHoaDon, idChiTietSP, tensp, sizesp, color, chiTietHoaDonBan.soLuong, giaSanPham from chiTietHoaDonBan join chiTietSP cTS on cTS.id = chiTietHoaDonBan.idChiTietSP join SanPham SP on SP.id = cTS.id_sp join hoaDonBanHang hDBH on hDBH.idHoaDonBanHang = chiTietHoaDonBan.idHoaDon join khachhang k on hDBH.idKhachHang = k.id where idHoaDon = ?";
+        PreparedStatement pm = con.con().prepareStatement(sql);
+        pm.setInt(1, id);
+        dtm.setRowCount(0);
+        ResultSet rs = pm.executeQuery();
+        while (rs.next()){
+            dtm.addRow(new Object[]{
+                    rs.getString(1), rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),toCurrency(rs.getLong(7))
+            });
+        }
+    }
+
 
 
 
